@@ -1,0 +1,23 @@
+backend:
+  name: github
+  repo: albissonte/Matiasjj
+  branch: main
+
+media_folder: "images"
+public_folder: "images"
+
+collections:
+  - name: "products"
+    label: "Products"
+    folder: "_products"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - {label: "Name", name: "title", widget: "string"}
+      - {label: "Category", name: "cat", widget: "select", options: ["dry","mini","big","water","special","extras"]}
+      - {label: "Price", name: "price", widget: "number"}
+      - {label: "Description", name: "desc", widget: "text"}
+      - {label: "Image", name: "image", widget: "image"}
+      - {label: "Badge Text", name: "badge", widget: "string"}
+      - {label: "Badge Color", name: "badge_color", widget: "string"}
+      - {label: "Order", name: "order", widget: "number"}
