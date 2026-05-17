@@ -1,10 +1,9 @@
 backend:
-  name: github
-  repo: albissonte/Matiasjj
-  branch: main
+  name: git-gateway
+  branch: principal
 
 media_folder: "images"
-public_folder: "images"
+public_folder: "/images"
 
 collections:
   - name: "products"
