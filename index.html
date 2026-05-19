@@ -274,7 +274,7 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
       <div class="amount" id="cartTotal">$0</div>
     </div>
     <div class="delivery-note" id="deliveryNote">📍 Add your address to see delivery fee<br><span style="font-size:.7rem">0-25 min from Springfield VA: FREE · 25-45 min: +$50 · 45+ min: +$100</span></div>
-    <button class="btn-send-wa" id="btnWhatsApp" onclick="sendToWhatsApp()" style="opacity:.4;cursor:not-allowed;">💬 Send Order via WhatsApp</button>
+    <button class="btn-send-wa" onclick="sendToWhatsApp()">💬 Send Order via WhatsApp</button>
     <p style="text-align:center;font-size:.72rem;color:#aaa;margin-top:8px">We'll confirm availability &amp; arrange payment</p>
   </div>
 </div>
@@ -327,7 +327,7 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;">
       <span class="book-info-status incomplete" id="bookStatus">Rellena tus datos para empezar.</span>
-      <button id="btnListo" onclick="collapseInfoBar()" style="display:none;background:var(--gr);color:#fff;border:none;border-radius:50px;padding:7px 18px;font-weight:900;font-size:.8rem;cursor:pointer;font-family:'Nunito',sans-serif;">✓ Listo, ver productos</button>
+      <button id="btnListo" onclick="collapseInfoBar()" style="display:none;background:var(--gr);color:#fff;border:none;border-radius:50px;padding:7px 18px;font-weight:900;font-size:.8rem;cursor:pointer;font-family:'Nunito',sans-serif;">Ver productos →</button>
     </div>
     <div id="bookSummary" style="display:none;align-items:center;gap:8px;font-size:.82rem;font-weight:800;color:#333;flex-wrap:wrap;">
       <span>📋</span>
@@ -1236,7 +1236,7 @@ function checkInfoStatus() {
   var cartReady = barReady && address;
   if(barReady) {
     if(status){ status.textContent = '✅ Listo!'; status.className = 'book-info-status ready'; }
-    if(btn){ btn.style.display = 'block'; btn.textContent = '✅ Listo, ver productos'; }
+    if(btn){ btn.style.display = 'block'; btn.textContent = 'Ver productos →'; }
   } else {
     var missing = [];
     if(!name) missing.push('nombre');
@@ -1246,8 +1246,6 @@ function checkInfoStatus() {
     if(status){ status.textContent = 'Falta: ' + missing.join(', '); status.className = 'book-info-status incomplete'; }
     if(btn) btn.style.display = 'none';
   }
-  var waBtn = document.getElementById('btnWhatsApp');
-  if(waBtn) { waBtn.style.opacity = cartReady ? '1' : '.4'; waBtn.style.cursor = cartReady ? 'pointer' : 'not-allowed'; }
   if(cartReady) {
 
     if(closeBtn){
@@ -1291,13 +1289,7 @@ function addToCart(btn) {
   }
   updateCart();
   document.getElementById('cartFloat').classList.add('visible');
-  if(cart.length === 1) {
-    var n=(document.getElementById('bifName').value||document.getElementById('cartName').value||'').trim();
-    var e=(document.getElementById('bifEmail').value||document.getElementById('cartEmail').value||'').trim();
-    var d=document.getElementById('bifDate').value||document.getElementById('cartDate').value||'';
-    var t=document.getElementById('bifTime').value||document.getElementById('cartTime').value||'';
-    if(!n||!e||!d||!t) setTimeout(function(){ openCart(); }, 300);
-  }
+  if(cart.length === 1) setTimeout(() => openCart(), 300);
 }
 
 function removeFromCart(name) {
