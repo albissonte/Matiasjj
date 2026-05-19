@@ -238,30 +238,30 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-drawer-header">
     <h3>🛒 My Order</h3>
-    <button class="cart-close-btn" onclick="closeCart()">✕</button>
+    <button class="cart-close-btn" id="cartCloseBtn" onclick="closeCart()">✕</button>
   </div>
   <div class="cart-user-info">
     <h4>📋 Your Event Details</h4>
     <div class="cui-grid">
       <div class="cui-field">
         <label>👤 Name *</label>
-        <input type="text" id="cartName" placeholder="Your name" oninput="syncFields('cartName','bifName')">
+        <input type="text" id="cartName" placeholder="Your name" oninput="syncFields('cartName','bifName');checkInfoStatus()">
       </div>
       <div class="cui-field">
         <label>📧 Email *</label>
-        <input type="email" id="cartEmail" placeholder="your@email.com" oninput="syncFields('cartEmail','bifEmail')">
+        <input type="email" id="cartEmail" placeholder="your@email.com" oninput="syncFields('cartEmail','bifEmail');checkInfoStatus()">
       </div>
       <div class="cui-field">
         <label>📅 Event Date *</label>
-        <input type="date" id="cartDate" oninput="syncFields('cartDate','bifDate')">
+        <input type="date" id="cartDate" oninput="syncFields('cartDate','bifDate');checkInfoStatus()" onchange="syncFields('cartDate','bifDate');checkInfoStatus()">
       </div>
       <div class="cui-field">
         <label>⏰ Event Time *</label>
-        <input type="time" id="cartTime" oninput="syncFields('cartTime','bifTime')">
+        <input type="time" id="cartTime" oninput="syncFields('cartTime','bifTime');checkInfoStatus()" onchange="syncFields('cartTime','bifTime');checkInfoStatus()">
       </div>
       <div class="cui-field full">
         <label>📍 Delivery Address *</label>
-        <input type="text" id="cartAddress" placeholder="123 Main St, Springfield, VA">
+        <input type="text" id="cartAddress" placeholder="123 Main St, Springfield, VA" oninput="checkInfoStatus()">
       </div>
     </div>
   </div>
@@ -274,7 +274,7 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
       <div class="amount" id="cartTotal">$0</div>
     </div>
     <div class="delivery-note" id="deliveryNote">📍 Add your address to see delivery fee<br><span style="font-size:.7rem">0-25 min from Springfield VA: FREE · 25-45 min: +$50 · 45+ min: +$100</span></div>
-    <button class="btn-send-wa" onclick="sendToWhatsApp()">💬 Send Order via WhatsApp</button>
+    <button class="btn-send-wa" id="btnWhatsApp" onclick="sendToWhatsApp()" style="opacity:.4;cursor:not-allowed;">💬 Send Order via WhatsApp</button>
     <p style="text-align:center;font-size:.72rem;color:#aaa;margin-top:8px">We'll confirm availability &amp; arrange payment</p>
   </div>
 </div>
@@ -311,21 +311,33 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
     <h3>📋 Your Info:</h3>
     <div class="bif">
       <label>Name</label>
-      <input type="text" id="bifName" placeholder="Your name" oninput="syncFields('bifName','cartName')">
+      <input type="text" id="bifName" placeholder="Your name" oninput="syncFields('bifName','cartName');checkInfoStatus()">
     </div>
     <div class="bif">
       <label>Email</label>
-      <input type="email" id="bifEmail" placeholder="your@email.com" oninput="syncFields('bifEmail','cartEmail')">
+      <input type="email" id="bifEmail" placeholder="your@email.com" oninput="syncFields('bifEmail','cartEmail');checkInfoStatus()">
     </div>
     <div class="bif">
       <label>Event Date</label>
-      <input type="date" id="bifDate" oninput="syncFields('bifDate','cartDate')">
+      <input type="date" id="bifDate" oninput="syncFields('bifDate','cartDate');checkInfoStatus()" onchange="syncFields('bifDate','cartDate');checkInfoStatus()">
     </div>
     <div class="bif">
       <label>Time</label>
-      <input type="time" id="bifTime" oninput="syncFields('bifTime','cartTime')">
+      <input type="time" id="bifTime" oninput="syncFields('bifTime','cartTime');checkInfoStatus()" onchange="syncFields('bifTime','cartTime');checkInfoStatus()">
     </div>
-    <span class="book-info-status incomplete" id="bookStatus">Fill in your info to start</span>
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;">
+      <span class="book-info-status incomplete" id="bookStatus">Rellena tus datos para empezar.</span>
+      <button id="btnListo" onclick="collapseInfoBar()" style="display:none;background:var(--gr);color:#fff;border:none;border-radius:50px;padding:7px 18px;font-weight:900;font-size:.8rem;cursor:pointer;font-family:'Nunito',sans-serif;">✓ Listo, ver productos</button>
+    </div>
+    <div id="bookSummary" style="display:none;align-items:center;gap:8px;font-size:.82rem;font-weight:800;color:#333;flex-wrap:wrap;">
+      <span>📋</span>
+      <span id="sumName" style="color:var(--or);"></span>
+      <span style="color:#ccc;">·</span>
+      <span id="sumDate"></span>
+      <span style="color:#ccc;">·</span>
+      <span id="sumTime"></span>
+      <button onclick="expandInfoBar()" style="background:var(--or);color:#fff;border:none;border-radius:50px;padding:4px 13px;font-size:.72rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;margin-left:6px;">✏️ Editar</button>
+    </div>
   </div>
 </div>
 
@@ -1208,25 +1220,60 @@ function syncFields(fromId, toId) {
 }
 
 function checkInfoStatus() {
-  const name = document.getElementById('bifName').value.trim();
-  const email = document.getElementById('bifEmail').value.trim();
-  const date = document.getElementById('bifDate').value;
-  const time = document.getElementById('bifTime').value;
-  const status = document.getElementById('bookStatus');
-  document.querySelectorAll('.bif input').forEach(inp => {
-    inp.classList.toggle('filled', inp.value.trim() !== '');
-  });
-  if(name && email && date && time) {
-    status.textContent = '✅ Ready — add items!';
-    status.className = 'book-info-status ready';
+  var name = (document.getElementById('bifName').value || document.getElementById('cartName').value || '').trim();
+  var email = (document.getElementById('bifEmail').value || document.getElementById('cartEmail').value || '').trim();
+  var date = document.getElementById('bifDate').value || document.getElementById('cartDate').value || '';
+  var time = document.getElementById('bifTime').value || document.getElementById('cartTime').value || '';
+  var address = (document.getElementById('cartAddress') ? document.getElementById('cartAddress').value.trim() : '');
+  var status = document.getElementById('bookStatus');
+  var btn = document.getElementById('btnListo');
+  var btnS = null;
+  var closeBtn = document.getElementById('cartCloseBtn');
+  document.querySelectorAll('.bif input').forEach(function(inp){ inp.classList.toggle('filled', inp.value.trim() !== ''); });
+  // Bar (top): only needs 4 fields
+  var barReady = name && email && date && time;
+  // Cart: needs 5 fields including address
+  var cartReady = barReady && address;
+  if(barReady) {
+    if(status){ status.textContent = '✅ Listo!'; status.className = 'book-info-status ready'; }
+    if(btn){ btn.style.display = 'block'; btn.textContent = '✅ Listo, ver productos'; }
   } else {
-    const missing = [];
-    if(!name) missing.push('name');
+    var missing = [];
+    if(!name) missing.push('nombre');
     if(!email) missing.push('email');
-    if(!date) missing.push('date');
-    if(!time) missing.push('time');
-    status.textContent = 'Fill in: ' + missing.join(', ');
-    status.className = 'book-info-status incomplete';
+    if(!date) missing.push('fecha');
+    if(!time) missing.push('hora');
+    if(status){ status.textContent = 'Falta: ' + missing.join(', '); status.className = 'book-info-status incomplete'; }
+    if(btn) btn.style.display = 'none';
+  }
+  var waBtn = document.getElementById('btnWhatsApp');
+  if(waBtn) { waBtn.style.opacity = cartReady ? '1' : '.4'; waBtn.style.cursor = cartReady ? 'pointer' : 'not-allowed'; }
+  if(cartReady) {
+
+    if(closeBtn){
+      closeBtn.style.background = '#00C94A';
+      closeBtn.style.color = '#fff';
+      closeBtn.style.width = 'auto';
+      closeBtn.style.padding = '6px 14px';
+      closeBtn.style.borderRadius = '50px';
+      closeBtn.style.fontSize = '.78rem';
+      closeBtn.style.fontWeight = '900';
+      closeBtn.textContent = '✅ Seguir comprando';
+      closeBtn.onclick = function(){ collapseInfoBar(); closeCart(); };
+    }
+  } else {
+
+    if(closeBtn && closeBtn.textContent !== '✕'){
+      closeBtn.style.background = '';
+      closeBtn.style.color = '';
+      closeBtn.style.width = '32px';
+      closeBtn.style.padding = '';
+      closeBtn.style.borderRadius = '50%';
+      closeBtn.style.fontSize = '1.1rem';
+      closeBtn.style.fontWeight = '';
+      closeBtn.textContent = '✕';
+      closeBtn.onclick = function(){ closeCart(); };
+    }
   }
 }
 
@@ -1244,7 +1291,13 @@ function addToCart(btn) {
   }
   updateCart();
   document.getElementById('cartFloat').classList.add('visible');
-  if(cart.length === 1) setTimeout(() => openCart(), 300);
+  if(cart.length === 1) {
+    var n=(document.getElementById('bifName').value||document.getElementById('cartName').value||'').trim();
+    var e=(document.getElementById('bifEmail').value||document.getElementById('cartEmail').value||'').trim();
+    var d=document.getElementById('bifDate').value||document.getElementById('cartDate').value||'';
+    var t=document.getElementById('bifTime').value||document.getElementById('cartTime').value||'';
+    if(!n||!e||!d||!t) setTimeout(function(){ openCart(); }, 300);
+  }
 }
 
 function removeFromCart(name) {
@@ -1365,6 +1418,38 @@ calc();
 
 const obs = new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:0.07});
 document.querySelectorAll('.pcard,.hstep,.tcard,.pkg,.gitem,.ptable').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity 0.45s ease, transform 0.45s ease';obs.observe(el);});
+
+// --- Info bar collapse ---
+
+function collapseInfoBar(){
+  const name = document.getElementById('bifName').value.trim();
+  const date = document.getElementById('bifDate').value;
+  const time = document.getElementById('bifTime').value;
+  if(!name || !date || !time) return;
+  const bar = document.querySelector('.book-info-bar');
+  bar.querySelectorAll('.bif, h3').forEach(function(el){ el.style.display='none'; });
+  document.getElementById('bookStatus').style.display='none';
+  document.getElementById('btnListo').style.display='none';
+  const d = new Date(date+'T12:00:00');
+  document.getElementById('sumName').textContent = name;
+  document.getElementById('sumDate').textContent = d.toLocaleDateString('es-US',{month:'short',day:'numeric'});
+  document.getElementById('sumTime').textContent = time;
+  const summary = document.getElementById('bookSummary');
+  summary.style.display = 'flex';
+  bar.style.padding = '7px 4vw';
+}
+function expandInfoBar(){
+  const bar = document.querySelector('.book-info-bar');
+  bar.querySelectorAll('.bif, h3').forEach(function(el){ el.style.display=''; });
+  document.getElementById('bookStatus').style.display='';
+  document.getElementById('btnListo').style.display='block';
+  document.getElementById('bookSummary').style.display='none';
+  bar.style.padding='';
+}
+['bifName','bifEmail','bifDate','bifTime'].forEach(function(id){
+  const el = document.getElementById(id);
+  // listeners handled via oninput in HTML
+});
 </script>
 </body>
 </html>
