@@ -1289,7 +1289,9 @@ function addToCart(btn) {
   }
   updateCart();
   document.getElementById('cartFloat').classList.add('visible');
-  if(cart.length === 1) setTimeout(() => openCart(), 300);
+  if(cart.length === 1 && sessionStorage.getItem('infoReady') !== '1') {
+    setTimeout(function(){ openCart(); }, 300);
+  }
 }
 
 function removeFromCart(name) {
@@ -1414,6 +1416,7 @@ document.querySelectorAll('.pcard,.hstep,.tcard,.pkg,.gitem,.ptable').forEach(el
 // --- Info bar collapse ---
 
 function collapseInfoBar(){
+  sessionStorage.setItem('infoReady','1');
   const name = document.getElementById('bifName').value.trim();
   const date = document.getElementById('bifDate').value;
   const time = document.getElementById('bifTime').value;
