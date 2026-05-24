@@ -75,6 +75,7 @@ section{padding:65px 4vw;}
 .tab{padding:7px 15px;border-radius:50px;font-weight:800;font-size:.75rem;border:2px solid #e0e0e0;background:#fff;color:#666;cursor:pointer;transition:.2s;}
 .tab.active,.tab:hover{background:var(--or);border-color:var(--or);color:#fff;}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:18px;}
+@media(max-width:600px){.pgrid{grid-template-columns:repeat(2,1fr);gap:10px;}}
 .pcard{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.07);transition:.3s;position:relative;}
 .pcard:hover{transform:translateY(-6px);box-shadow:0 14px 40px rgba(255,107,0,.12);}
 .pcard.in-cart{border:2.5px solid var(--gr);}
@@ -240,7 +241,7 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
     <h3>🛒 My Order</h3>
     <button class="cart-close-btn" id="cartCloseBtn" onclick="closeCart()">✕</button>
   </div>
-  <div class="cart-user-info">
+ <div class="cart-user-info">
     <h4>📋 Your Event Details</h4>
     <div class="cui-grid">
       <div class="cui-field">
@@ -326,8 +327,8 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
       <input type="time" id="bifTime" oninput="syncFields('bifTime','cartTime');checkInfoStatus()" onchange="syncFields('bifTime','cartTime');checkInfoStatus()">
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start;">
-      <span class="book-info-status incomplete" id="bookStatus">Rellena tus datos para empezar.</span>
-      <button id="btnListo" onclick="collapseInfoBar()" style="display:none;background:var(--gr);color:#fff;border:none;border-radius:50px;padding:7px 18px;font-weight:900;font-size:.8rem;cursor:pointer;font-family:'Nunito',sans-serif;">Ver productos →</button>
+      <span class="book-info-status incomplete" id="bookStatus">Fill in your details to get started.</span>
+      <button id="btnListo" onclick="collapseInfoBar()" style="display:none;background:var(--gr);color:#fff;border:none;border-radius:50px;padding:7px 18px;font-weight:900;font-size:.8rem;cursor:pointer;font-family:'Nunito',sans-serif;">View products</button>
     </div>
     <div id="bookSummary" style="display:none;align-items:center;gap:8px;font-size:.82rem;font-weight:800;color:#333;flex-wrap:wrap;">
       <span>📋</span>
@@ -336,7 +337,7 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
       <span id="sumDate"></span>
       <span style="color:#ccc;">·</span>
       <span id="sumTime"></span>
-      <button onclick="expandInfoBar()" style="background:var(--or);color:#fff;border:none;border-radius:50px;padding:4px 13px;font-size:.72rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;margin-left:6px;">✏️ Editar</button>
+      <button onclick="expandInfoBar()" style="background:var(--or);color:#fff;border:none;border-radius:50px;padding:4px 13px;font-size:.72rem;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;margin-left:6px;">✏️ Edit</button>
     </div>
   </div>
 </div>
@@ -346,7 +347,7 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
   <div class="htxt">
     <div class="hbadge"><span class="bp"></span> Available Today · VA · MD · DC</div>
     <h1>The most<br><span class="a1">fun party</span><br>starts <span class="a2">here!</span></h1>
-    <p class="hsub">Bounce houses, water slides, tables, chairs and tents for birthdays, school events, quinceañeras and more. Delivery, setup and pickup always included.</p>
+    <p class="hsub">Bounce houses, water slides, tables, chairs and tents for birthdays, school events, 15 years birthdays and more. Delivery, setup and pickup always included.</p>
     <div class="hbtns">
       <button class="bmain" onclick="toggleCart()">🛒 My Cart</button>
       <a href="#catalog" class="balt">🏰 View Catalog</a>
@@ -1235,15 +1236,15 @@ function checkInfoStatus() {
   // Cart: needs 5 fields including address
   var cartReady = barReady && address;
   if(barReady) {
-    if(status){ status.textContent = '✅ Listo!'; status.className = 'book-info-status ready'; }
-    if(btn){ btn.style.display = 'block'; btn.textContent = 'Ver productos →'; }
+    if(status){ status.textContent = '✅ Ready!'; status.className = 'book-info-status ready'; }
+    if(btn){ btn.style.display = 'block'; btn.textContent = 'View products'; }
   } else {
     var missing = [];
-    if(!name) missing.push('nombre');
+    if(!name) missing.push('name');
     if(!email) missing.push('email');
-    if(!date) missing.push('fecha');
-    if(!time) missing.push('hora');
-    if(status){ status.textContent = 'Falta: ' + missing.join(', '); status.className = 'book-info-status incomplete'; }
+    if(!date) missing.push('date');
+    if(!time) missing.push('hour');
+    if(status){ status.textContent = 'Missing: ' + missing.join(', '); status.className = 'book-info-status incomplete'; }
     if(btn) btn.style.display = 'none';
   }
   if(cartReady) {
@@ -1256,7 +1257,7 @@ function checkInfoStatus() {
       closeBtn.style.borderRadius = '50px';
       closeBtn.style.fontSize = '.78rem';
       closeBtn.style.fontWeight = '900';
-      closeBtn.textContent = '✅ Seguir comprando';
+      closeBtn.textContent = '✅ Continue shopping';
       closeBtn.onclick = function(){ collapseInfoBar(); closeCart(); };
     }
   } else {
@@ -1446,5 +1447,6 @@ function expandInfoBar(){
   // listeners handled via oninput in HTML
 });
 </script>
+<script src="booking-integration.js"></script>
 </body>
 </html>
