@@ -1,0 +1,15 @@
+name = "matiasjump"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding     = "DB"              # env.DB en el código
+database_name = "matiasjump-db" # nombre que le ponés en el dashboard
+database_id   = "REEMPLAZAR_CON_TU_DATABASE_ID"   # ← lo obtenés al crear la DB
+
+# Variables de entorno (también se pueden poner en el dashboard)
+# ⚠️  NUNCA subas este archivo con valores reales a GitHub público
+# Ponelas en el dashboard: Settings → Environment Variables
+[vars]
+ADMIN_USER     = "matias"
+# ADMIN_PASSWORD y SESSION_SECRET van SOLO en el dashboard como secrets
