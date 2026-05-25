@@ -3,435 +3,343 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin — Matias Jump Jumping</title>
+<title>Matias Admin Zone</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --or:#FF6B00;--ye:#FFD700;--gr:#00C94A;--bl:#00AAFF;--pu:#8B00FF;--pk:#FF1493;
-  --bg:#f4f6fb;--surface:#fff;--border:#e8eaf0;--text:#1a1c2e;--muted:#8890a8;
-  --pending-c:#f59e0b;--confirmed-c:#10b981;--cancelled-c:#ef4444;--completed-c:#6366f1;
-  --sidebar:230px;
+:root{--or:#FF6B00;--pk:#FF1493;--gr:#00C94A;--bl:#00AAFF;--dk:#141414;--bg:#f7f8ff;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dk);}
+
+/* ── LOGIN ── */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff8f0,#fff0fa,#f0f8ff);}
+.login-box{background:#fff;border-radius:24px;padding:40px 32px;box-shadow:0 20px 60px rgba(255,107,0,.15);width:100%;max-width:380px;text-align:center;}
+.login-box h1{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--dk);margin-bottom:4px;}
+.login-box p{color:#888;font-size:.85rem;margin-bottom:28px;}
+.lfield{display:flex;flex-direction:column;gap:5px;text-align:left;margin-bottom:14px;}
+.lfield label{font-size:.72rem;font-weight:800;color:var(--or);text-transform:uppercase;letter-spacing:1px;}
+.lfield input{padding:11px 14px;border:2px solid #eee;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;transition:.2s;}
+.lfield input:focus{outline:none;border-color:var(--or);}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--or),#ff9100);color:#fff;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;cursor:pointer;margin-top:8px;transition:.2s;}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,0,.4);}
+.login-err{color:#ff4757;font-size:.8rem;font-weight:700;margin-top:10px;display:none;}
+.login-err.show{display:block;}
+
+/* ── APP ── */
+#adminApp{display:none;min-height:100vh;}
+
+/* ── TOP BAR ── */
+.top-bar{background:#fff;border-bottom:3px solid var(--or);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.top-bar-logo{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--dk);}
+.top-bar-logo span{color:var(--or);}
+.top-bar-right{display:flex;align-items:center;gap:10px;}
+.hamburger{display:none;background:none;border:none;font-size:1.6rem;cursor:pointer;padding:2px 6px;}
+.btn-logout{padding:7px 16px;background:#f0f0f0;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;transition:.2s;}
+.btn-logout:hover{background:#ffdddd;color:#c00;}
+
+/* ── TABS ── */
+.tabs-bar{background:#fff;padding:0 20px;border-bottom:2px solid #f0f0f0;display:flex;gap:4px;overflow-x:auto;}
+.tab-btn{padding:12px 18px;border:none;background:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;color:#888;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.2s;white-space:nowrap;}
+.tab-btn.active{color:var(--or);border-bottom-color:var(--or);}
+.tab-content{display:none;padding:20px;}
+.tab-content.active{display:block;}
+
+/* ── SECTION HEADERS ── */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.sec-title{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--dk);}
+.btn-primary{padding:9px 20px;background:linear-gradient(135deg,var(--or),#ff9100);color:#fff;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;cursor:pointer;transition:.2s;}
+.btn-primary:hover{transform:scale(1.04);}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 16px rgba(0,0,0,.06);text-align:center;}
+.stat-num{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--or);}
+.stat-lbl{font-size:.68rem;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.06);}
+table{width:100%;border-collapse:collapse;background:#fff;}
+thead{background:linear-gradient(135deg,var(--or),#ff9100);color:#fff;}
+th{padding:12px 14px;text-align:left;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+td{padding:11px 14px;border-bottom:1px solid #f5f5f5;font-size:.84rem;font-weight:700;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fff8f0;}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.7rem;font-weight:800;}
+.badge-pending{background:#fff3e0;color:#e65c00;}
+.badge-confirmed{background:#e0ffe8;color:var(--gr);}
+.badge-cancelled{background:#ffebee;color:#c00;}
+.badge-completed{background:#e3f2fd;color:var(--bl);}
+
+/* ── ACTION BUTTONS ── */
+.action-btn{padding:4px 10px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.7rem;cursor:pointer;transition:.2s;margin:2px;}
+.btn-confirm{background:#e0ffe8;color:var(--gr);}
+.btn-cancel{background:#ffebee;color:#c00;}
+.btn-edit{background:#e3f2fd;color:var(--bl);}
+.btn-delete{background:#ffebee;color:#c00;}
+.btn-complete{background:#ede7f6;color:#7b1fa2;}
+.btn-wa{background:#e0ffe8;color:#075e54;}
+
+/* ── FILTERS ── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.f-chip{padding:6px 14px;border:2px solid #eee;border-radius:50px;font-size:.75rem;font-weight:800;color:#888;cursor:pointer;background:#fff;transition:.2s;}
+.f-chip.active,.f-chip:hover{background:var(--or);border-color:var(--or);color:#fff;}
+
+/* ── SEARCH ── */
+.search-bar{padding:9px 14px;border:2px solid #eee;border-radius:50px;font-family:'Nunito',sans-serif;font-size:.84rem;font-weight:700;transition:.2s;outline:none;}
+.search-bar:focus{border-color:var(--or);}
+
+/* ── PRODUCT GRID ── */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+.prod-card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.07);transition:.2s;}
+.prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(255,107,0,.1);}
+.prod-card.inactive{opacity:.5;}
+.prod-name{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--dk);margin-bottom:4px;}
+.prod-cat{font-size:.7rem;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.prod-price{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--or);margin-bottom:12px;}
+.prod-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ── CALENDAR ── */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cal-nav h3{font-family:'Fredoka One',cursive;font-size:1.2rem;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dn{font-size:.68rem;font-weight:800;text-transform:uppercase;color:#aaa;text-align:center;padding:.3rem 0;}
+.cal-day{min-height:60px;background:#fff;border:1.5px solid #f0f0f0;border-radius:10px;padding:6px;cursor:pointer;transition:.2s;}
+.cal-day:hover{border-color:var(--or);}
+.cal-day.other{opacity:.3;pointer-events:none;}
+.cal-day.today{border-color:var(--bl);background:#f0f8ff;}
+.cal-day.blk{background:#fff0f0;border-color:#ffaaaa;}
+.cal-day.has-res{background:#f0fff4;border-color:#aaddbb;}
+.cal-num{font-size:.78rem;font-weight:900;}
+.cal-tag{font-size:.58rem;font-weight:800;padding:1px 5px;border-radius:4px;margin-top:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cal-tag.blk{background:#fee2e2;color:#dc2626;}
+.cal-tag.res{background:#dcfce7;color:#16a34a;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:20px;padding:28px 24px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--dk);margin-bottom:20px;}
+.mfield{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.mfield label{font-size:.72rem;font-weight:800;color:var(--or);text-transform:uppercase;letter-spacing:1px;}
+.mfield input,.mfield select,.mfield textarea{padding:10px 13px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;transition:.2s;outline:none;}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{border-color:var(--or);}
+.mfield textarea{resize:vertical;min-height:80px;}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap;}
+.btn-secondary{padding:9px 20px;background:#f0f0f0;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;}
+
+/* ── DETAIL ROWS ── */
+.detail-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.detail-item label{font-size:.7rem;font-weight:800;color:var(--or);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:3px;}
+.detail-item p{font-size:.88rem;font-weight:700;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;right:20px;background:#1a1c2e;color:#fff;border-radius:12px;padding:12px 18px;font-size:.83rem;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.3);transform:translateY(16px);opacity:0;transition:.25s;z-index:9999;max-width:280px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-left:4px solid var(--gr);}
+.toast.err{border-left:4px solid #ef4444;}
+
+/* ── OVERLAY sidebar mobile ── */
+#sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;}
+#sb-overlay.show{display:block;}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .hamburger{display:block;}
+  .tab-btn{padding:10px 12px;font-size:.78rem;}
+  .detail-row{grid-template-columns:1fr;}
 }
-html{font-size:15px}
-body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
-
-/* ── Login screen ── */
-#login-screen{position:fixed;inset:0;z-index:999;background:linear-gradient(135deg,#fff8f0,#fff0fa,#f0f8ff);display:flex;align-items:center;justify-content:center;padding:1rem}
-#login-screen.hidden{display:none}
-.login-card{background:#fff;border-radius:24px;padding:2.5rem 2rem;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(255,107,0,.12)}
-.login-logo{text-align:center;margin-bottom:2rem}
-.login-logo span{font-size:3rem;display:block;margin-bottom:.5rem}
-.login-logo h1{font-family:'Fredoka One',cursive;font-size:1.5rem}
-.login-logo p{font-size:.8rem;color:var(--muted);margin-top:.2rem}
-.login-err{background:#fff0f0;border:1.5px solid #ffc0c0;border-radius:10px;padding:.65rem 1rem;font-size:.82rem;color:#d00;font-weight:700;margin-bottom:1rem;display:none}
-.login-err.show{display:block}
-.f-label{display:block;font-size:.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem}
-.f-input{width:100%;padding:.78rem 1rem;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;color:var(--text);outline:none;transition:.2s;margin-bottom:1rem}
-.f-input:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(255,107,0,.1)}
-.btn-login{width:100%;background:linear-gradient(135deg,var(--or),#ff9100);color:#fff;border:none;border-radius:12px;padding:.88rem;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;transition:.2s}
-.btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,0,.35)}
-
-/* ── Sidebar ── */
-.sidebar{width:var(--sidebar);background:#1a1c2e;min-height:100vh;display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100}
-.sb-logo{padding:1.2rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:.65rem}
-.sb-logo-icon{font-size:1.5rem}
-.sb-logo h1{font-family:'Fredoka One',cursive;font-size:.95rem;color:#fff;line-height:1.1}
-.sb-logo small{color:rgba(255,255,255,.35);font-size:.62rem;display:block;font-family:'Nunito',sans-serif;font-weight:700}
-.sb-nav{flex:1;padding:.75rem 0}
-.sb-section{font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:.5rem 1.1rem .2rem}
-.sb-link{display:flex;align-items:center;gap:.6rem;padding:.6rem 1.1rem;color:rgba(255,255,255,.55);text-decoration:none;font-weight:700;font-size:.83rem;transition:.2s;border-left:3px solid transparent;cursor:pointer;user-select:none}
-.sb-link:hover,.sb-link.active{color:#fff;background:rgba(255,255,255,.06);border-left-color:var(--or)}
-.sb-link .ic{font-size:1rem;width:18px;text-align:center;flex-shrink:0}
-.sb-link .pill{margin-left:auto;background:var(--or);color:#fff;font-size:.62rem;font-weight:900;padding:2px 7px;border-radius:50px;min-width:20px;text-align:center}
-.sb-footer{padding:1rem 1.1rem;border-top:1px solid rgba(255,255,255,.07)}
-.sb-logout{display:flex;align-items:center;gap:.5rem;color:rgba(255,255,255,.35);font-size:.78rem;font-weight:700;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;padding:0;transition:.2s;width:100%}
-.sb-logout:hover{color:#ef4444}
-
-/* ── Main ── */
-.app{display:none;width:100%}
-.app.ready{display:flex}
-.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:.8rem 1.4rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;position:sticky;top:0;z-index:50}
-.topbar-title{font-family:'Fredoka One',cursive;font-size:1.15rem}
-.topbar-right{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
-.search-box{display:flex;align-items:center;gap:.4rem;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:.4rem .85rem}
-.search-box input{background:none;border:none;outline:none;font-family:'Nunito',sans-serif;font-size:.83rem;color:var(--text);width:170px}
-.content{flex:1;padding:1.4rem}
-
-/* ── Views ── */
-.view{display:none}.view.active{display:block}
-
-/* ── Stats ── */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.9rem;margin-bottom:1.4rem}
-.stat-card{background:var(--surface);border-radius:16px;padding:1rem 1.1rem;border:1.5px solid var(--border);position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;right:0;width:55px;height:55px;border-radius:0 16px 0 55px;opacity:.09}
-.c-or::before{background:var(--or)}.c-ye::before{background:var(--ye)}.c-gr::before{background:var(--gr)}.c-pu::before{background:var(--pu)}.c-bl::before{background:var(--bl)}
-.stat-label{font-size:.7rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem}
-.stat-value{font-family:'Fredoka One',cursive;font-size:1.9rem;color:var(--text)}
-.stat-icon{position:absolute;top:.8rem;right:.9rem;font-size:1.4rem;opacity:.45}
-
-/* ── Card box ── */
-.card-box{background:var(--surface);border-radius:16px;border:1.5px solid var(--border);overflow:hidden;margin-bottom:1.4rem}
-.card-box-hdr{padding:.9rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
-.card-box-hdr h3{font-family:'Fredoka One',cursive;font-size:1.05rem}
-.hdr-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
-
-/* ── Table ── */
-.tbl-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-th{background:#f8f9fc;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:.65rem 1rem;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:.72rem 1rem;font-size:.83rem;border-bottom:1px solid var(--border);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafbff}
-
-/* ── Status badge ── */
-.status{display:inline-flex;align-items:center;padding:.22rem .65rem;border-radius:50px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-.status.pending  {background:rgba(245,158,11,.12);color:#d97706}
-.status.confirmed{background:rgba(16,185,129,.12);color:#059669}
-.status.cancelled{background:rgba(239,68,68,.12);color:#dc2626}
-.status.completed{background:rgba(99,102,241,.12);color:#4f46e5}
-
-/* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem .95rem;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:800;border:none;cursor:pointer;transition:.15s;text-decoration:none;white-space:nowrap}
-.btn:hover{transform:translateY(-1px)}
-.btn-or{background:var(--or);color:#fff}.btn-or:hover{background:#e05e00}
-.btn-gr{background:var(--gr);color:#fff}.btn-gr:hover{background:#00a83c}
-.btn-re{background:#ef4444;color:#fff}.btn-re:hover{background:#dc2626}
-.btn-gh{background:var(--bg);border:1.5px solid var(--border);color:var(--text)}.btn-gh:hover{border-color:var(--or);color:var(--or)}
-.btn-sm{padding:.32rem .7rem;font-size:.73rem}
-
-/* ── Filters ── */
-.filters{display:flex;gap:.4rem;flex-wrap:wrap}
-.f-btn{padding:.3rem .85rem;border-radius:50px;font-size:.74rem;font-weight:800;border:2px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:.2s}
-.f-btn.active,.f-btn:hover{background:var(--or);border-color:var(--or);color:#fff}
-
-/* ── Two-col dashboard ── */
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-@media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
-
-/* ── Product grid ── */
-.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.9rem;padding:1rem}
-.prod-card{background:var(--bg);border-radius:14px;border:1.5px solid var(--border);overflow:hidden;transition:.2s}
-.prod-card:hover{border-color:var(--or);box-shadow:0 6px 20px rgba(255,107,0,.1)}
-.prod-card.inactive{opacity:.5}
-.prod-img{height:140px;background:#eee;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
-.prod-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.prod-badge{position:absolute;top:7px;left:7px;padding:2px 8px;border-radius:50px;font-size:.66rem;font-weight:800;color:#fff}
-.prod-off{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.55);color:#fff;padding:2px 8px;border-radius:50px;font-size:.65rem;font-weight:800}
-.prod-body{padding:.85rem}
-.prod-name{font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:.2rem;line-height:1.2}
-.prod-cat{font-size:.7rem;font-weight:800;color:var(--muted);text-transform:uppercase;margin-bottom:.4rem}
-.prod-price{font-family:'Fredoka One',cursive;font-size:1.25rem;color:var(--or);margin-bottom:.65rem}
-.prod-actions{display:flex;gap:.4rem}
-
-/* ── Calendar ── */
-.cal-wrap{display:grid;grid-template-columns:1fr 300px;gap:1rem}
-@media(max-width:860px){.cal-wrap{grid-template-columns:1fr}}
-.cal-nav{display:flex;align-items:center;justify-content:space-between;width:100%}
-.cal-nav h3{font-family:'Fredoka One',cursive;font-size:1.1rem}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:.5rem}
-.cal-dn{font-size:.68rem;font-weight:800;text-transform:uppercase;color:var(--muted);text-align:center;padding:.35rem 0}
-.cal-day{min-height:65px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:.35rem .45rem;cursor:pointer;transition:.15s}
-.cal-day:hover{border-color:var(--or)}
-.cal-day.other{opacity:.3;pointer-events:none}
-.cal-day.today{border-color:var(--bl);background:#f0f8ff}
-.cal-day.blk{background:#fef2f2;border-color:#fca5a5}
-.cal-day.has-res{background:#f0fdf4;border-color:#86efac}
-.cal-day.blk.has-res{background:#fff7ed;border-color:#fdba74}
-.cal-num{font-size:.78rem;font-weight:900}
-.cal-tag{font-size:.58rem;font-weight:800;padding:1px 4px;border-radius:4px;margin-top:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cal-tag.blk{background:#fee2e2;color:#dc2626}
-.cal-tag.res{background:#dcfce7;color:#16a34a}
-
-/* ── Upcoming list ── */
-.upcoming-item{display:flex;align-items:center;gap:.7rem;padding:.6rem 1rem;border-bottom:1px solid var(--border)}
-.upcoming-item:last-child{border-bottom:none}
-.upcoming-date{background:var(--or);color:#fff;border-radius:9px;padding:.28rem .55rem;text-align:center;min-width:42px;flex-shrink:0}
-.upcoming-date .dm{font-family:'Fredoka One',cursive;font-size:1rem;line-height:1}
-.upcoming-date .mo{font-size:.6rem;font-weight:800;text-transform:uppercase}
-.upcoming-info{flex:1;min-width:0}
-.upcoming-name{font-weight:800;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.upcoming-meta{font-size:.72rem;color:var(--muted)}
-
-/* ── Modal ── */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:.22s}
-.modal-bg.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:20px;width:100%;max-width:620px;max-height:90vh;overflow-y:auto;transform:translateY(20px);transition:.22s;scrollbar-width:thin}
-.modal-bg.open .modal{transform:translateY(0)}
-.modal-hdr{padding:1.1rem 1.3rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:5}
-.modal-hdr h3{font-family:'Fredoka One',cursive;font-size:1.1rem}
-.modal-x{width:28px;height:28px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:1rem;transition:.15s}
-.modal-x:hover{background:#fde8e8;color:#ef4444}
-.modal-body{padding:1.3rem}
-.modal-ftr{padding:.9rem 1.3rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap}
-
-/* ── Form fields ── */
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem}
-@media(max-width:480px){.frow{grid-template-columns:1fr}}
-.fld{margin-bottom:.8rem}
-.fld label{display:block;font-size:.73rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.32rem}
-.fld input,.fld select,.fld textarea{width:100%;padding:.68rem .9rem;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;color:var(--text);outline:none;transition:.2s;background:var(--surface)}
-.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(255,107,0,.1)}
-.fld textarea{min-height:75px;resize:vertical;line-height:1.5}
-
-/* ── Toast ── */
-.toast{position:fixed;bottom:1.4rem;right:1.4rem;background:#1a1c2e;color:#fff;border-radius:12px;padding:.75rem 1.1rem;font-size:.83rem;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.3);transform:translateY(16px);opacity:0;transition:.25s;z-index:9999;max-width:280px}
-.toast.show{transform:translateY(0);opacity:1}
-.toast.ok{border-left:4px solid var(--gr)}
-.toast.err{border-left:4px solid #ef4444}
-
-/* ── Responsive ── */
-@media(max-width:700px){
-  .sidebar{transform:translateX(-100%);transition:.3s}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-}
+.empty{text-align:center;padding:40px;color:#aaa;font-size:.9rem;font-weight:700;}
+.loading{text-align:center;padding:40px;color:#aaa;font-weight:700;}
 </style>
 </head>
 <body>
 
 <!-- ══ LOGIN ══ -->
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-logo">
-      <span>🏰</span>
-      <h1>Matias Jump</h1>
-      <p>Admin Panel</p>
-    </div>
-    <div class="login-err" id="login-err"></div>
-    <label class="f-label">Username</label>
-    <input class="f-input" type="text" id="login-user" autocomplete="username">
-    <label class="f-label">Password</label>
-    <input class="f-input" type="password" id="login-pass" autocomplete="current-password"
-           onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="btn-login" onclick="doLogin()">Enter Panel →</button>
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:2.5rem;margin-bottom:8px">🪂</div>
+    <h1>Matias <span style="color:var(--or)">Jump Jumping</span></h1>
+    <p>Administración</p>
+    <div class="lfield"><label>Username</label><input type="text" id="loginUser" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lfield"><label>Password</label><input type="password" id="loginPass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn-login" onclick="doLogin()">Enter Panel</button>
   </div>
 </div>
 
 <!-- ══ APP ══ -->
-<div class="app" id="app">
+<div id="sb-overlay" onclick="closeSidebar()"></div>
+<div id="adminApp">
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sb-logo">
-      <span class="sb-logo-icon">🏰</span>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="top-bar-logo">🏰 Matias <span>J.J.</span></div>
+    </div>
+    <div class="top-bar-right">
+      <span id="topbar-subtitle" style="font-size:.78rem;color:#aaa;font-weight:700">Dashboard</span>
+      <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar" id="tabs-bar">
+    <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
+    <button class="tab-btn" onclick="showTab('bookings')">📋 Bookings</button>
+    <button class="tab-btn" onclick="showTab('calendar')">📅 Calendar</button>
+    <button class="tab-btn" onclick="showTab('products')">🎪 Products</button>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="tab-content active" id="tab-dashboard">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stTotal">—</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-card"><div class="stat-num" id="stPending" style="color:#e65c00">—</div><div class="stat-lbl">Pending</div></div>
+      <div class="stat-card"><div class="stat-num" id="stConfirmed" style="color:var(--gr)">—</div><div class="stat-lbl">Confirmed</div></div>
+      <div class="stat-card"><div class="stat-num" id="stProducts" style="color:var(--bl)">—</div><div class="stat-lbl">Products</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div>
-        <h1>Matias Jump</h1>
-        <small>Admin Panel</small>
+        <div class="sec-title" style="margin-bottom:12px">📅 Next 7 days</div>
+        <div id="upcomingList" class="loading">Loading…</div>
+      </div>
+      <div>
+        <div class="sec-title" style="margin-bottom:12px">⏳ Pending approval</div>
+        <div id="pendingList" class="loading">Loading…</div>
       </div>
     </div>
-    <nav class="sb-nav">
-      <div class="sb-section">Overview</div>
-      <div class="sb-link active" onclick="goTo('dashboard')" data-view="dashboard"><span class="ic">📊</span>Dashboard</div>
-      <div class="sb-section">Bookings</div>
-      <div class="sb-link" onclick="goTo('bookings')" data-view="bookings">
-        <span class="ic">📋</span>All Bookings
-        <span class="pill" id="sb-pending" style="display:none">0</span>
-      </div>
-      <div class="sb-link" onclick="goTo('calendar')" data-view="calendar"><span class="ic">📅</span>Calendar</div>
-      <div class="sb-section">Catalog</div>
-      <div class="sb-link" onclick="goTo('products')" data-view="products"><span class="ic">🎪</span>Products</div>
-    </nav>
-    <div class="sb-footer">
-      <button class="sb-logout" onclick="doLogout()"><span>🚪</span> Log out</button>
+  </div>
+
+  <!-- ── BOOKINGS ── -->
+  <div class="tab-content" id="tab-bookings">
+    <div class="sec-header">
+      <div class="sec-title">All Bookings</div>
+      <input class="search-bar" type="text" placeholder="🔍 Search…" oninput="searchBookings(this.value)" style="width:200px">
     </div>
-  </aside>
+    <div class="filter-row" id="bk-filters">
+      <div class="f-chip active" onclick="filterBk(this,'')">All</div>
+      <div class="f-chip" onclick="filterBk(this,'pending')">⏳ Pending</div>
+      <div class="f-chip" onclick="filterBk(this,'confirmed')">✅ Confirmed</div>
+      <div class="f-chip" onclick="filterBk(this,'cancelled')">❌ Cancelled</div>
+      <div class="f-chip" onclick="filterBk(this,'completed')">🎉 Completed</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Ref</th><th>Client</th><th>Item</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="bookingsTbody"><tr><td colspan="7" class="loading">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
 
-  <!-- Main -->
-  <div class="main">
-    <div class="topbar">
-      <div style="display:flex;align-items:center;gap:.7rem">
-        <span id="topbar-title" class="topbar-title">Dashboard</span>
-      </div>
-      <div class="topbar-right">
-        <div class="search-box">
-          <span>🔍</span>
-          <input type="text" id="search-q" placeholder="Search bookings…" oninput="searchBookings()">
+  <!-- ── CALENDAR ── -->
+  <div class="tab-content" id="tab-calendar">
+    <div style="display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start">
+      <div>
+        <div class="cal-nav">
+          <button class="action-btn btn-edit" onclick="calMonth(-1)">← Prev</button>
+          <h3 id="cal-label">—</h3>
+          <button class="action-btn btn-edit" onclick="calMonth(1)">Next →</button>
         </div>
-        <button class="btn btn-or" onclick="openNewProduct()">+ Product</button>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+      <div>
+        <div style="background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:14px">
+          <div style="font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:12px">🚫 Block a date</div>
+          <div class="mfield"><label>Date</label><input type="date" id="blk-date"></div>
+          <div class="mfield"><label>Reason</label><input type="text" id="blk-reason" placeholder="Holiday…"></div>
+          <button class="btn-primary" style="width:100%;background:linear-gradient(135deg,#ef4444,#dc2626)" onclick="doBlockDate()">Block date</button>
+        </div>
+        <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 4px 16px rgba(0,0,0,.07);font-size:.8rem">
+          <div style="font-family:'Fredoka One',cursive;margin-bottom:10px">Legend</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#f0fff4;border:1.5px solid #aaddbb"></div>Has bookings</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#fff0f0;border:1.5px solid #ffaaaa"></div>Blocked</div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:14px;height:14px;border-radius:3px;background:#f0f8ff;border:1.5px solid var(--bl)"></div>Today</div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="content">
+  <!-- ── PRODUCTS ── -->
+  <div class="tab-content" id="tab-products">
+    <div class="sec-header">
+      <div class="sec-title">Product Catalog</div>
+      <button class="btn-primary" onclick="openProductModal()">+ Add Product</button>
+    </div>
+    <div class="filter-row" id="pr-filters">
+      <div class="f-chip active" onclick="filterPr(this,'')">All</div>
+      <div class="f-chip" onclick="filterPr(this,'combo')">🎪 Combo</div>
+      <div class="f-chip" onclick="filterPr(this,'castle')">🏰 Castle</div>
+      <div class="f-chip" onclick="filterPr(this,'mini')">⚡ Mini</div>
+      <div class="f-chip" onclick="filterPr(this,'water')">💦 Water</div>
+      <div class="f-chip" onclick="filterPr(this,'chairs')">🪑 Chairs</div>
+      <div class="f-chip" onclick="filterPr(this,'extras')">➕ Extras</div>
+    </div>
+    <div class="prod-grid" id="prodGrid"><div class="loading">Loading…</div></div>
+  </div>
 
-      <!-- ── DASHBOARD ── -->
-      <div class="view active" id="view-dashboard">
-        <div class="stats-grid">
-          <div class="stat-card c-or"><span class="stat-icon">📋</span><div class="stat-label">Total Bookings</div><div class="stat-value" id="s-total">—</div></div>
-          <div class="stat-card c-ye"><span class="stat-icon">⏳</span><div class="stat-label">Pending</div><div class="stat-value" id="s-pending">—</div></div>
-          <div class="stat-card c-gr"><span class="stat-icon">✅</span><div class="stat-label">Confirmed</div><div class="stat-value" id="s-confirmed">—</div></div>
-          <div class="stat-card c-bl"><span class="stat-icon">🎪</span><div class="stat-label">Active Products</div><div class="stat-value" id="s-products">—</div></div>
-        </div>
-        <div class="dash-grid">
-          <div class="card-box">
-            <div class="card-box-hdr"><h3>📅 Next 7 days</h3></div>
-            <div id="upcoming-list"></div>
-          </div>
-          <div class="card-box">
-            <div class="card-box-hdr"><h3>⏳ Pending approval</h3><button class="btn btn-gh btn-sm" onclick="goTo('bookings')">View all →</button></div>
-            <div id="pending-list"></div>
-          </div>
-        </div>
-      </div>
+</div>
 
-      <!-- ── BOOKINGS ── -->
-      <div class="view" id="view-bookings">
-        <div class="card-box">
-          <div class="card-box-hdr">
-            <h3>All Bookings</h3>
-            <div class="hdr-row">
-              <div class="filters" id="bk-filters">
-                <button class="f-btn active" onclick="filterBk(this,'')">All</button>
-                <button class="f-btn" onclick="filterBk(this,'pending')">⏳ Pending</button>
-                <button class="f-btn" onclick="filterBk(this,'confirmed')">✅ Confirmed</button>
-                <button class="f-btn" onclick="filterBk(this,'cancelled')">❌ Cancelled</button>
-                <button class="f-btn" onclick="filterBk(this,'completed')">🎉 Completed</button>
-              </div>
-            </div>
-          </div>
-          <div class="tbl-wrap">
-            <table>
-              <thead><tr>
-                <th>Ref</th><th>Client</th><th>Item</th><th>Event Date</th>
-                <th>Time</th><th>Status</th><th>Actions</th>
-              </tr></thead>
-              <tbody id="bk-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── CALENDAR ── -->
-      <div class="view" id="view-calendar">
-        <div class="cal-wrap">
-          <div class="card-box" style="overflow:visible">
-            <div class="card-box-hdr">
-              <div class="cal-nav">
-                <button class="btn btn-gh btn-sm" onclick="calMonth(-1)">← Prev</button>
-                <h3 id="cal-label">—</h3>
-                <button class="btn btn-gh btn-sm" onclick="calMonth(1)">Next →</button>
-              </div>
-            </div>
-            <div style="padding:1rem">
-              <div class="cal-grid" id="cal-grid"></div>
-            </div>
-          </div>
-          <div>
-            <div class="card-box" style="margin-bottom:1rem">
-              <div class="card-box-hdr"><h3>🚫 Block a Date</h3></div>
-              <div style="padding:1rem">
-                <div class="fld"><label>Date</label><input type="date" id="blk-date"></div>
-                <div class="fld"><label>Reason (optional)</label><input type="text" id="blk-reason" placeholder="Holiday, private event…"></div>
-                <button class="btn btn-re" style="width:100%" onclick="doBlockDate()">Block this date</button>
-              </div>
-            </div>
-            <div class="card-box">
-              <div class="card-box-hdr"><h3>📋 Legend</h3></div>
-              <div style="padding:1rem;display:flex;flex-direction:column;gap:.5rem;font-size:.8rem">
-                <div style="display:flex;align-items:center;gap:.5rem"><div style="width:13px;height:13px;border-radius:3px;background:#dcfce7;border:1px solid #86efac;flex-shrink:0"></div>Has bookings</div>
-                <div style="display:flex;align-items:center;gap:.5rem"><div style="width:13px;height:13px;border-radius:3px;background:#fef2f2;border:1px solid #fca5a5;flex-shrink:0"></div>Blocked</div>
-                <div style="display:flex;align-items:center;gap:.5rem"><div style="width:13px;height:13px;border-radius:3px;background:#f0f8ff;border:1px solid var(--bl);flex-shrink:0"></div>Today</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── PRODUCTS ── -->
-      <div class="view" id="view-products">
-        <div class="card-box">
-          <div class="card-box-hdr">
-            <h3>Product Catalog</h3>
-            <div class="hdr-row">
-              <div class="filters" id="pr-filters">
-                <button class="f-btn active" onclick="filterPr(this,'')">All</button>
-                <button class="f-btn" onclick="filterPr(this,'combo')">Combo</button>
-                <button class="f-btn" onclick="filterPr(this,'castle')">Castle</button>
-                <button class="f-btn" onclick="filterPr(this,'mini')">Mini</button>
-                <button class="f-btn" onclick="filterPr(this,'water')">Water</button>
-                <button class="f-btn" onclick="filterPr(this,'extras')">Extras</button>
-              </div>
-              <button class="btn btn-or btn-sm" onclick="openNewProduct()">+ Add</button>
-            </div>
-          </div>
-          <div class="prod-grid" id="prod-grid"></div>
-        </div>
-      </div>
-
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /app -->
-
-<!-- ══ Modal: Booking detail ══ -->
-<div class="modal-bg" id="modal-bk" onclick="bgClose(event,'modal-bk')">
+<!-- ══ Modal: Booking Detail ══ -->
+<div class="modal-overlay" id="modalBooking" onclick="if(event.target===this)closeModal('modalBooking')">
   <div class="modal">
-    <div class="modal-hdr">
-      <h3 id="mbk-title">Booking</h3>
-      <button class="modal-x" onclick="closeModal('modal-bk')">✕</button>
-    </div>
-    <div class="modal-body" id="mbk-body"></div>
-    <div class="modal-ftr" id="mbk-ftr"></div>
+    <h3 id="mbkTitle">Booking Detail</h3>
+    <div id="mbkBody"></div>
+    <div class="modal-btns" id="mbkBtns"></div>
   </div>
 </div>
 
 <!-- ══ Modal: Product ══ -->
-<div class="modal-bg" id="modal-pr" onclick="bgClose(event,'modal-pr')">
+<div class="modal-overlay" id="modalProduct" onclick="if(event.target===this)closeModal('modalProduct')">
   <div class="modal">
-    <div class="modal-hdr">
-      <h3 id="mpr-title">Product</h3>
-      <button class="modal-x" onclick="closeModal('modal-pr')">✕</button>
+    <h3 id="mprTitle">Product</h3>
+    <input type="hidden" id="prId">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="mfield"><label>Name *</label><input type="text" id="prName" placeholder="Big Combo Blue"></div>
+      <div class="mfield"><label>Category *</label>
+        <select id="prCat">
+          <option value="combo">🎪 Combo</option>
+          <option value="castle">🏰 Castle</option>
+          <option value="mini">⚡ Mini</option>
+          <option value="water">💦 Water</option>
+          <option value="chairs">🪑 Chairs / Tables</option>
+          <option value="extras">➕ Extras</option>
+        </select>
+      </div>
+      <div class="mfield"><label>Price ($) *</label><input type="number" id="prPrice" min="0" step="0.01"></div>
+      <div class="mfield"><label>Status</label>
+        <select id="prActive">
+          <option value="1">✅ Active</option>
+          <option value="0">🙈 Hidden</option>
+        </select>
+      </div>
     </div>
-    <div class="modal-body">
-      <input type="hidden" id="pr-id">
-      <div class="frow">
-        <div class="fld"><label>Name *</label><input type="text" id="pr-name" placeholder="Big Combo Blue"></div>
-        <div class="fld"><label>Category *</label>
-          <select id="pr-cat">
-            <option value="combo">🎪 Combo</option><option value="castle">🏰 Castle</option>
-            <option value="mini">⚡ Mini</option><option value="water">💦 Water</option>
-            <option value="extras">➕ Extras</option>
-          </select>
-        </div>
-      </div>
-      <div class="frow">
-        <div class="fld"><label>Price ($) *</label><input type="number" id="pr-price" min="0" step="0.01" placeholder="220"></div>
-        <div class="fld"><label>Status</label>
-          <select id="pr-active">
-            <option value="1">✅ Active (visible on site)</option>
-            <option value="0">🙈 Inactive (hidden)</option>
-          </select>
-        </div>
-      </div>
-      <div class="fld"><label>Description</label><textarea id="pr-desc" placeholder="Brief description…"></textarea></div>
-      <div class="frow">
-        <div class="fld"><label>Badge text</label><input type="text" id="pr-badge" placeholder="🏰 Castle"></div>
-        <div class="fld"><label>Badge color</label><input type="color" id="pr-badge-color" value="#FF6B00" style="height:41px;padding:.3rem"></div>
-      </div>
-      <div class="fld"><label>Tags (comma separated)</label><input type="text" id="pr-tags" placeholder="👦 Kids, 📏 15×15, 🎉 Classic"></div>
-      <div class="fld"><label>Image URL</label><input type="url" id="pr-img" placeholder="https://…"></div>
+    <div class="mfield"><label>Description</label><textarea id="prDesc" placeholder="Brief description…"></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="mfield"><label>Badge text</label><input type="text" id="prBadge" placeholder="🏰 Castle"></div>
+      <div class="mfield"><label>Badge color</label><input type="color" id="prBadgeColor" value="#FF6B00" style="height:42px;padding:4px"></div>
     </div>
-    <div class="modal-ftr">
-      <button class="btn btn-gh" onclick="closeModal('modal-pr')">Cancel</button>
-      <button class="btn btn-re btn-sm" id="pr-del-btn" onclick="deleteProduct()" style="display:none">🗑 Delete</button>
-      <button class="btn btn-or" onclick="saveProduct()">💾 Save</button>
+    <div class="mfield"><label>Tags (comma separated)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
+    <div class="mfield"><label>Image URL</label><input type="url" id="prImg" placeholder="https://…"></div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeModal('modalProduct')">Cancel</button>
+      <button class="action-btn btn-delete" id="prDelBtn" onclick="deleteProduct()" style="display:none">🗑 Delete</button>
+      <button class="btn-primary" onclick="saveProduct()">💾 Save</button>
     </div>
   </div>
 </div>
 
-<!-- ══ Modal: Calendar day ══ -->
-<div class="modal-bg" id="modal-day" onclick="bgClose(event,'modal-day')">
-  <div class="modal" style="max-width:460px">
-    <div class="modal-hdr">
-      <h3 id="mday-title">—</h3>
-      <button class="modal-x" onclick="closeModal('modal-day')">✕</button>
-    </div>
-    <div class="modal-body" id="mday-body"></div>
-    <div class="modal-ftr">
-      <button class="btn btn-gh" onclick="closeModal('modal-day')">Close</button>
-      <button class="btn btn-re" id="mday-blk-btn" onclick="blockFromModal()">🚫 Block date</button>
-      <button class="btn btn-gr" id="mday-unblk-btn" style="display:none" onclick="unblockFromModal()">✅ Unblock</button>
+<!-- ══ Modal: Calendar Day ══ -->
+<div class="modal-overlay" id="modalDay" onclick="if(event.target===this)closeModal('modalDay')">
+  <div class="modal" style="max-width:420px">
+    <h3 id="mdayTitle">—</h3>
+    <div id="mdayBody"></div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeModal('modalDay')">Close</button>
+      <button class="action-btn btn-delete" id="mdayBlkBtn" onclick="blockFromModal()">🚫 Block</button>
+      <button class="action-btn btn-confirm" id="mdayUnblkBtn" style="display:none" onclick="unblockFromModal()">✅ Unblock</button>
     </div>
   </div>
 </div>
@@ -439,195 +347,159 @@ tr:hover td{background:#fafbff}
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-//  Config
-// ============================================================
 const API = '/api/admin';
-
-// ============================================================
-//  State
-// ============================================================
 let token = localStorage.getItem('mj_token') || '';
-let bookings = [], products = [], blockedDates = [], bookedDatesMap = {};
-let currentBkId = null, currentDayDate = null;
+let bookings = [], products = [], blockedDates = [], bookedMap = {};
+let currentBkId = null, currentDay = null;
 let calY = new Date().getFullYear(), calM = new Date().getMonth();
 let bkFilter = '', prFilter = '';
 
-// ============================================================
-//  Boot
-// ============================================================
+// ── Boot ──────────────────────────────────────────────────────
 (async () => {
-  if (!token) return; // show login
-  const ok = await checkSession();
-  if (ok) showApp();
+  if (!token) return;
+  const r = await apiFetch('GET', '/me').catch(() => null);
+  if (r?.ok) showApp();
+  else { token = ''; localStorage.removeItem('mj_token'); }
 })();
 
-async function checkSession() {
-  try {
-    const r = await api('GET', '/me');
-    return r.ok;
-  } catch { return false; }
-}
-
-// ============================================================
-//  Auth
-// ============================================================
+// ── Auth ──────────────────────────────────────────────────────
 async function doLogin() {
-  const user = document.getElementById('login-user').value.trim();
-  const pass = document.getElementById('login-pass').value;
-  const errEl = document.getElementById('login-err');
-  errEl.classList.remove('show');
-
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const err  = document.getElementById('loginErr');
+  err.classList.remove('show');
   try {
     const r = await fetch(`${API}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: user, password: pass }),
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username:user, password:pass})
     });
     const d = await r.json();
-    if (!d.ok) { errEl.textContent = d.error || 'Invalid credentials'; errEl.classList.add('show'); return; }
-    token = d.token;
-    localStorage.setItem('mj_token', token);
+    if (!d.ok) { err.textContent = d.error || 'Invalid credentials'; err.classList.add('show'); return; }
+    token = d.token; localStorage.setItem('mj_token', token);
     showApp();
-  } catch { errEl.textContent = 'Connection error. Try again.'; errEl.classList.add('show'); }
+  } catch { err.textContent = 'Connection error.'; err.classList.add('show'); }
 }
 
 function doLogout() {
   token = ''; localStorage.removeItem('mj_token');
-  document.getElementById('app').classList.remove('ready');
-  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('adminApp').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
 }
 
 function showApp() {
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('app').classList.add('ready');
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
   loadAll();
 }
 
-// ============================================================
-//  Load all data
-// ============================================================
+// ── Tabs ──────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(name.slice(0,4))) b.classList.add('active');
+  });
+  document.getElementById('topbar-subtitle').textContent = name.charAt(0).toUpperCase() + name.slice(1);
+  if (name === 'calendar') renderCalendar();
+  closeSidebar();
+}
+
+// ── Sidebar mobile ────────────────────────────────────────────
+function toggleSidebar() {
+  // On mobile we just convert tabs-bar to a vertical menu via overlay
+  document.getElementById('sb-overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sb-overlay').classList.remove('show');
+}
+
+// ── Load all ──────────────────────────────────────────────────
 async function loadAll() {
   await Promise.allSettled([loadStats(), loadBookings(), loadProducts(), loadCalendarData()]);
 }
 
-// ============================================================
-//  Navigation
-// ============================================================
-function goTo(name) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
-  document.querySelector(`[data-view="${name}"]`).classList.add('active');
-  document.getElementById('topbar-title').textContent =
-    {dashboard:'Dashboard', bookings:'Bookings', calendar:'Calendar', products:'Products'}[name];
-  if (name === 'calendar') renderCalendar();
-}
-
-// ============================================================
-//  Stats / Dashboard
-// ============================================================
+// ── Stats ─────────────────────────────────────────────────────
 async function loadStats() {
-  const d = await api('GET', '/stats');
-  if (!d.ok) return;
+  const d = await apiFetch('GET', '/stats').catch(() => null);
+  if (!d?.ok) return;
   const s = d.stats;
-  document.getElementById('s-total').textContent     = s.total_bookings;
-  document.getElementById('s-pending').textContent   = s.pending_bookings;
-  document.getElementById('s-confirmed').textContent = s.confirmed_bookings;
-  document.getElementById('s-products').textContent  = s.active_products;
-
-  const pill = document.getElementById('sb-pending');
-  if (s.pending_bookings > 0) { pill.textContent = s.pending_bookings; pill.style.display = ''; }
-  else pill.style.display = 'none';
+  document.getElementById('stTotal').textContent     = s.total_bookings;
+  document.getElementById('stPending').textContent   = s.pending_bookings;
+  document.getElementById('stConfirmed').textContent = s.confirmed_bookings;
+  document.getElementById('stProducts').textContent  = s.active_products;
 
   // Upcoming
-  const ul = document.getElementById('upcoming-list');
-  if (!s.upcoming.length) { ul.innerHTML = empty('No upcoming events'); }
+  const ul = document.getElementById('upcomingList');
+  if (!s.upcoming?.length) { ul.innerHTML = '<div class="empty">No upcoming events</div>'; }
   else ul.innerHTML = s.upcoming.map(b => {
     const dt = new Date(b.event_date + 'T12:00:00');
-    return `<div class="upcoming-item">
-      <div class="upcoming-date"><div class="dm">${dt.getDate()}</div><div class="mo">${dt.toLocaleString('en',{month:'short'})}</div></div>
-      <div class="upcoming-info">
-        <div class="upcoming-name">${esc(b.customer_name)}</div>
-        <div class="upcoming-meta">🎪 ${esc(b.item_name)} · ⏰ ${esc(b.event_time)}</div>
+    return `<div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;align-items:center;gap:10px">
+      <div style="background:var(--or);color:#fff;border-radius:8px;padding:4px 8px;text-align:center;min-width:40px;flex-shrink:0">
+        <div style="font-family:'Fredoka One',cursive;font-size:.95rem;line-height:1">${dt.getDate()}</div>
+        <div style="font-size:.55rem;font-weight:800;text-transform:uppercase">${dt.toLocaleString('en',{month:'short'})}</div>
       </div>
-      <span class="status ${b.status}">${b.status}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.customer_name)}</div>
+        <div style="font-size:.72rem;color:#aaa">🎪 ${esc(b.item_name)} · ⏰ ${esc(b.event_time)}</div>
+      </div>
+      <span class="badge badge-${b.status}">${b.status}</span>
     </div>`;
   }).join('');
-
-  // Pending
-  const pl = document.getElementById('pending-list');
-  const pending = bookings.filter(b => b.status === 'pending').slice(0, 5);
-  if (!pending.length) { pl.innerHTML = empty('No pending bookings 🎉'); }
-  else pl.innerHTML = pending.map(b => `
-    <div class="upcoming-item">
-      <div class="upcoming-info">
-        <div class="upcoming-name">${esc(b.booking_ref)} — ${esc(b.customer_name)}</div>
-        <div class="upcoming-meta">🎪 ${esc(b.item_name)} · 📅 ${b.event_date}</div>
-      </div>
-      <button class="btn btn-gh btn-sm" onclick="openBooking(${b.id})">View →</button>
-    </div>`).join('');
 }
 
-// ============================================================
-//  Bookings
-// ============================================================
+// ── Bookings ──────────────────────────────────────────────────
 async function loadBookings() {
-  const d = await api('GET', '/bookings');
-  if (!d.ok) return;
+  const d = await apiFetch('GET', '/bookings').catch(() => null);
+  if (!d?.ok) return;
   bookings = d.bookings;
-  renderBookings();
-  // update dashboard pending list
-  const pl = document.getElementById('pending-list');
-  if (pl) {
-    const pending = bookings.filter(b => b.status === 'pending').slice(0,5);
-    pl.innerHTML = !pending.length ? empty('No pending bookings 🎉') :
-      pending.map(b => `<div class="upcoming-item">
-        <div class="upcoming-info">
-          <div class="upcoming-name">${esc(b.booking_ref)} — ${esc(b.customer_name)}</div>
-          <div class="upcoming-meta">🎪 ${esc(b.item_name)} · 📅 ${b.event_date}</div>
-        </div>
-        <button class="btn btn-gh btn-sm" onclick="openBooking(${b.id})">View →</button>
-      </div>`).join('');
-  }
-  // rebuild booked dates map for calendar
-  bookedDatesMap = {};
+  bookedMap = {};
   bookings.forEach(b => {
-    if (['pending','confirmed'].includes(b.status)) {
-      bookedDatesMap[b.event_date] = (bookedDatesMap[b.event_date] || 0) + 1;
-    }
+    if (['pending','confirmed'].includes(b.status))
+      bookedMap[b.event_date] = (bookedMap[b.event_date] || 0) + 1;
   });
+  renderBookings();
+  // Pending list on dashboard
+  const pl = document.getElementById('pendingList');
+  const pending = bookings.filter(b => b.status === 'pending').slice(0,5);
+  pl.innerHTML = !pending.length ? '<div class="empty">No pending 🎉</div>' :
+    pending.map(b => `<div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div>
+        <div style="font-weight:800;font-size:.85rem">${esc(b.booking_ref)}</div>
+        <div style="font-size:.72rem;color:#aaa">${esc(b.customer_name)} · ${b.event_date}</div>
+      </div>
+      <button class="action-btn btn-edit" onclick="openBooking(${b.id})">View →</button>
+    </div>`).join('');
 }
 
 function renderBookings(list) {
   let rows = list || bookings;
   if (bkFilter) rows = rows.filter(b => b.status === bkFilter);
-  const tbody = document.getElementById('bk-tbody');
-  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted)">No bookings found</td></tr>`; return; }
+  const tbody = document.getElementById('bookingsTbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">No bookings found</td></tr>'; return; }
   tbody.innerHTML = rows.map(b => `<tr>
     <td><strong>${esc(b.booking_ref)}</strong></td>
-    <td><div style="font-weight:800">${esc(b.customer_name)}</div><div style="font-size:.72rem;color:var(--muted)">${esc(b.customer_email)}</div></td>
+    <td><div style="font-weight:800">${esc(b.customer_name)}</div><div style="font-size:.72rem;color:#aaa">${esc(b.customer_email)}</div></td>
     <td style="font-size:.8rem">${esc(b.item_name)}</td>
     <td><strong>${b.event_date}</strong></td>
     <td>${esc(b.event_time)}</td>
-    <td><span class="status ${b.status}">${b.status}</span></td>
-    <td><button class="btn btn-gh btn-sm" onclick="openBooking(${b.id})">View →</button></td>
+    <td><span class="badge badge-${b.status}">${b.status}</span></td>
+    <td><button class="action-btn btn-edit" onclick="openBooking(${b.id})">View →</button></td>
   </tr>`).join('');
 }
 
-function filterBk(btn, status) {
-  document.querySelectorAll('#bk-filters .f-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active'); bkFilter = status; renderBookings();
+function filterBk(el, status) {
+  document.querySelectorAll('#bk-filters .f-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active'); bkFilter = status; renderBookings();
 }
 
-function searchBookings() {
-  const q = document.getElementById('search-q').value.toLowerCase();
+function searchBookings(q) {
   if (!q) { renderBookings(); return; }
   renderBookings(bookings.filter(b =>
-    b.customer_name?.toLowerCase().includes(q) ||
-    b.customer_email?.toLowerCase().includes(q) ||
-    b.booking_ref?.toLowerCase().includes(q) ||
-    b.item_name?.toLowerCase().includes(q)
+    b.customer_name?.toLowerCase().includes(q.toLowerCase()) ||
+    b.customer_email?.toLowerCase().includes(q.toLowerCase()) ||
+    b.booking_ref?.toLowerCase().includes(q.toLowerCase()) ||
+    b.item_name?.toLowerCase().includes(q.toLowerCase())
   ));
 }
 
@@ -635,197 +507,151 @@ async function openBooking(id) {
   currentBkId = id;
   const b = bookings.find(x => x.id == id);
   if (!b) return;
-  document.getElementById('mbk-title').textContent = `${b.booking_ref} — ${b.customer_name}`;
-
-  const dt = new Date(b.event_date + 'T12:00:00');
-  const dateStr = dt.toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric',year:'numeric'});
-
-  document.getElementById('mbk-body').innerHTML = `
-    <div class="frow">
-      <div class="fld"><label>Client</label><p style="font-weight:800;padding:.4rem 0">${esc(b.customer_name)}</p></div>
-      <div class="fld"><label>Email</label><p style="padding:.4rem 0">${esc(b.customer_email)}</p></div>
-      <div class="fld"><label>Phone</label><p style="padding:.4rem 0">${esc(b.customer_phone||'—')}</p></div>
-      <div class="fld"><label>Status</label><p style="padding:.4rem 0"><span class="status ${b.status}">${b.status}</span></p></div>
-      <div class="fld"><label>Event Date</label><p style="font-weight:800;padding:.4rem 0">${dateStr}</p></div>
-      <div class="fld"><label>Time</label><p style="padding:.4rem 0">${esc(b.event_time)}</p></div>
+  document.getElementById('mbkTitle').textContent = `${b.booking_ref} — ${b.customer_name}`;
+  document.getElementById('mbkBody').innerHTML = `
+    <div class="detail-row">
+      <div class="detail-item"><label>Client</label><p>${esc(b.customer_name)}</p></div>
+      <div class="detail-item"><label>Email</label><p>${esc(b.customer_email)}</p></div>
+      <div class="detail-item"><label>Phone</label><p>${esc(b.customer_phone||'—')}</p></div>
+      <div class="detail-item"><label>Status</label><p><span class="badge badge-${b.status}">${b.status}</span></p></div>
+      <div class="detail-item"><label>Event Date</label><p><strong>${b.event_date}</strong></p></div>
+      <div class="detail-item"><label>Time</label><p>${esc(b.event_time)}</p></div>
     </div>
-    <div class="fld"><label>Delivery Address</label><p style="padding:.4rem 0">${esc(b.delivery_address)}</p></div>
-    <div class="fld" style="margin-top:.5rem"><label>Item Booked</label>
-      <div style="background:var(--bg);border-radius:10px;padding:.75rem 1rem;margin-top:.3rem;font-weight:800">${esc(b.item_name)}</div>
+    <div class="mfield"><label>Address</label><p style="font-size:.88rem;font-weight:700;padding:4px 0">${esc(b.delivery_address)}</p></div>
+    <div style="background:#fff8f0;border-radius:10px;padding:12px;margin:10px 0"><strong style="font-family:'Fredoka One',cursive">🎪 ${esc(b.item_name)}</strong></div>
+    ${b.notes ? `<div class="mfield"><label>Customer notes</label><p style="font-size:.85rem;color:#888;padding:4px 0">${esc(b.notes)}</p></div>` : ''}
+    <div class="mfield"><label>Internal notes</label>
+      <textarea id="bkNotes" style="width:100%;padding:10px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;outline:none;min-height:70px" placeholder="Only you see this…">${esc(b.internal_notes||'')}</textarea>
+      <button class="action-btn btn-edit" style="margin-top:4px" onclick="saveNotes()">Save notes</button>
     </div>
-    ${b.notes ? `<div class="fld" style="margin-top:.5rem"><label>Customer Notes</label><p style="padding:.4rem 0;color:var(--muted)">${esc(b.notes)}</p></div>` : ''}
-    <div class="fld" style="margin-top:.75rem"><label>Internal Notes (only you see this)</label>
-      <textarea id="bk-int-notes" style="width:100%;padding:.7rem;border:2px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;min-height:70px;outline:none;font-weight:700"
-        placeholder="Add internal notes…">${esc(b.internal_notes||'')}</textarea>
-      <button class="btn btn-gh btn-sm" style="margin-top:.4rem" onclick="saveNotes()">Save notes</button>
-    </div>
-    <div style="margin-top:.75rem;display:flex;gap:.4rem;flex-wrap:wrap">
-      <a href="https://wa.me/15718398914?text=${encodeURIComponent('Hi '+b.customer_name+'! Your booking '+b.booking_ref+' for '+b.event_date+' is confirmed ✅ Thank you!')}"
-         target="_blank" class="btn btn-gr btn-sm">💬 WhatsApp client</a>
+    <div style="margin-top:10px">
+      <a href="https://wa.me/15718398914?text=${encodeURIComponent('Hi '+b.customer_name+'! Your booking '+b.booking_ref+' for '+b.event_date+' is confirmed ✅')}" target="_blank" class="action-btn btn-wa">💬 WhatsApp client</a>
     </div>`;
-
-  const ftr = document.getElementById('mbk-ftr');
-  ftr.innerHTML = `
-    <button class="btn btn-gh" onclick="closeModal('modal-bk')">Close</button>
-    ${b.status === 'pending'    ? `<button class="btn btn-gr btn-sm" onclick="changeStatus('confirmed')">✅ Confirm</button>` : ''}
-    ${['pending','confirmed'].includes(b.status) ? `<button class="btn btn-re btn-sm" onclick="changeStatus('cancelled')">❌ Cancel</button>` : ''}
-    ${b.status === 'confirmed'  ? `<button class="btn btn-sm" style="background:var(--pu);color:#fff" onclick="changeStatus('completed')">🎉 Completed</button>` : ''}
-    <button class="btn btn-re btn-sm" onclick="deleteBooking()">🗑 Delete</button>`;
-
-  openModal('modal-bk');
+  document.getElementById('mbkBtns').innerHTML = `
+    <button class="btn-secondary" onclick="closeModal('modalBooking')">Close</button>
+    ${b.status==='pending'?`<button class="action-btn btn-confirm" onclick="changeStatus('confirmed')">✅ Confirm</button>`:''}
+    ${['pending','confirmed'].includes(b.status)?`<button class="action-btn btn-cancel" onclick="changeStatus('cancelled')">❌ Cancel</button>`:''}
+    ${b.status==='confirmed'?`<button class="action-btn btn-complete" onclick="changeStatus('completed')">🎉 Complete</button>`:''}
+    <button class="action-btn btn-delete" onclick="deleteBk()">🗑</button>`;
+  openModal('modalBooking');
 }
 
 async function changeStatus(status) {
-  await api('POST', `/bookings/${currentBkId}`, { status });
+  await apiFetch('POST', `/bookings/${currentBkId}`, {status});
   const b = bookings.find(x => x.id == currentBkId);
   if (b) b.status = status;
-  renderBookings();
-  closeModal('modal-bk');
-  loadStats();
-  toast('Status updated to ' + status, 'ok');
+  renderBookings(); closeModal('modalBooking'); loadStats();
+  toast('Status → ' + status, 'ok');
 }
 
 async function saveNotes() {
-  const notes = document.getElementById('bk-int-notes').value;
-  await api('POST', `/bookings/${currentBkId}`, { internal_notes: notes });
+  const notes = document.getElementById('bkNotes').value;
+  await apiFetch('POST', `/bookings/${currentBkId}`, {internal_notes: notes});
   const b = bookings.find(x => x.id == currentBkId);
   if (b) b.internal_notes = notes;
   toast('Notes saved ✓', 'ok');
 }
 
-async function deleteBooking() {
-  if (!confirm('Delete this booking permanently?')) return;
-  await api('DELETE', `/bookings/${currentBkId}`);
+async function deleteBk() {
+  if (!confirm('Delete this booking?')) return;
+  await apiFetch('DELETE', `/bookings/${currentBkId}`);
   bookings = bookings.filter(x => x.id != currentBkId);
-  renderBookings(); closeModal('modal-bk'); loadStats();
-  toast('Booking deleted', 'ok');
+  renderBookings(); closeModal('modalBooking'); loadStats();
+  toast('Deleted', 'ok');
 }
 
-// ============================================================
-//  Products
-// ============================================================
+// ── Products ──────────────────────────────────────────────────
 async function loadProducts() {
-  const d = await api('GET', '/products');
-  if (!d.ok) return;
+  const d = await apiFetch('GET', '/products').catch(() => null);
+  if (!d?.ok) return;
   products = d.products;
   renderProducts();
+  document.getElementById('stProducts').textContent = products.filter(p => p.active).length;
 }
 
 function renderProducts() {
-  const grid = document.getElementById('prod-grid');
+  const grid = document.getElementById('prodGrid');
   let list = prFilter ? products.filter(p => p.category === prFilter) : products;
-  if (!list.length) { grid.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--muted);grid-column:1/-1">No products</div>`; return; }
-  grid.innerHTML = list.map(p => {
-    const tags = parseTags(p.tags);
-    return `<div class="prod-card ${p.active ? '' : 'inactive'}">
-      <div class="prod-img">
-        🎪
-        ${p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" onerror="this.remove()">` : ''}
-        ${p.badge_text ? `<span class="prod-badge" style="background:${esc(p.badge_color)}">${esc(p.badge_text)}</span>` : ''}
-        ${!p.active ? '<span class="prod-off">HIDDEN</span>' : ''}
+  if (!list.length) { grid.innerHTML = '<div class="empty">No products found</div>'; return; }
+  const icons = {combo:'🎪',castle:'🏰',mini:'⚡',water:'💦',chairs:'🪑',extras:'➕'};
+  grid.innerHTML = list.map(p => `
+    <div class="prod-card ${p.active?'':'inactive'}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:1.4rem">${icons[p.category]||'📦'}</span>
+        <span style="font-size:.7rem;font-weight:800;color:${p.active?'var(--gr)':'#aaa'}">${p.active?'ACTIVE':'HIDDEN'}</span>
       </div>
-      <div class="prod-body">
-        <div class="prod-name">${esc(p.name)}</div>
-        <div class="prod-cat">${esc(p.category)}</div>
-        <div class="prod-price">$${parseFloat(p.price).toFixed(2)}</div>
-        <div class="prod-actions">
-          <button class="btn btn-gh btn-sm" onclick="openEditProduct(${p.id})" style="flex:1">✏️ Edit</button>
-          <button class="btn btn-sm ${p.active ? 'btn-re' : 'btn-gr'}" onclick="toggleActive(${p.id},${p.active ? 0 : 1})">
-            ${p.active ? '🙈' : '👁'}
-          </button>
-        </div>
+      <div class="prod-name">${esc(p.name)}</div>
+      <div class="prod-cat">${esc(p.category)}</div>
+      <div class="prod-price">$${parseFloat(p.price).toFixed(2)}</div>
+      ${p.description?`<div style="font-size:.78rem;color:#888;margin-bottom:10px;line-height:1.5">${esc(p.description)}</div>`:''}
+      <div class="prod-actions">
+        <button class="action-btn btn-edit" onclick="openProductModal(${p.id})">✏️ Edit</button>
+        <button class="action-btn ${p.active?'btn-cancel':'btn-confirm'}" onclick="toggleActive(${p.id},${p.active?0:1})">${p.active?'🙈 Hide':'👁 Show'}</button>
       </div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 }
 
-function filterPr(btn, cat) {
-  document.querySelectorAll('#pr-filters .f-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active'); prFilter = cat; renderProducts();
+function filterPr(el, cat) {
+  document.querySelectorAll('#pr-filters .f-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active'); prFilter = cat; renderProducts();
 }
 
-function openNewProduct() {
-  document.getElementById('mpr-title').textContent = 'Add Product';
-  ['pr-id','pr-name','pr-price','pr-desc','pr-badge','pr-tags','pr-img'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('pr-cat').value          = 'combo';
-  document.getElementById('pr-active').value       = '1';
-  document.getElementById('pr-badge-color').value  = '#FF6B00';
-  document.getElementById('pr-del-btn').style.display = 'none';
-  openModal('modal-pr');
-}
-
-function openEditProduct(id) {
-  const p = products.find(x => x.id == id);
-  if (!p) return;
-  document.getElementById('mpr-title').textContent = 'Edit Product';
-  document.getElementById('pr-id').value          = p.id;
-  document.getElementById('pr-name').value        = p.name;
-  document.getElementById('pr-cat').value         = p.category;
-  document.getElementById('pr-price').value       = p.price;
-  document.getElementById('pr-active').value      = p.active;
-  document.getElementById('pr-desc').value        = p.description || '';
-  document.getElementById('pr-badge').value       = p.badge_text || '';
-  document.getElementById('pr-badge-color').value = p.badge_color || '#FF6B00';
-  document.getElementById('pr-tags').value        = parseTags(p.tags).join(', ');
-  document.getElementById('pr-img').value         = p.image_url || '';
-  document.getElementById('pr-del-btn').style.display = '';
-  openModal('modal-pr');
+function openProductModal(id) {
+  const p = id ? products.find(x => x.id == id) : null;
+  document.getElementById('mprTitle').textContent = p ? 'Edit Product' : 'New Product';
+  document.getElementById('prId').value          = p?.id || '';
+  document.getElementById('prName').value        = p?.name || '';
+  document.getElementById('prCat').value         = p?.category || 'combo';
+  document.getElementById('prPrice').value       = p?.price || '';
+  document.getElementById('prActive').value      = p !== null ? (p?.active ?? 1) : 1;
+  document.getElementById('prDesc').value        = p?.description || '';
+  document.getElementById('prBadge').value       = p?.badge_text || '';
+  document.getElementById('prBadgeColor').value  = p?.badge_color || '#FF6B00';
+  document.getElementById('prTags').value        = parseTags(p?.tags).join(', ');
+  document.getElementById('prImg').value         = p?.image_url || '';
+  document.getElementById('prDelBtn').style.display = p ? '' : 'none';
+  openModal('modalProduct');
 }
 
 async function saveProduct() {
-  const id    = document.getElementById('pr-id').value;
-  const name  = document.getElementById('pr-name').value.trim();
-  const price = document.getElementById('pr-price').value;
-  if (!name || price === '') { toast('Name and price are required', 'err'); return; }
-
-  const tagsRaw = document.getElementById('pr-tags').value;
-  const tags    = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
-
+  const id    = document.getElementById('prId').value;
+  const name  = document.getElementById('prName').value.trim();
+  const price = document.getElementById('prPrice').value;
+  if (!name || price === '') { toast('Name and price required', 'err'); return; }
+  const tagsRaw = document.getElementById('prTags').value;
+  const tags    = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
   const body = {
-    name,
-    category:    document.getElementById('pr-cat').value,
-    price:       parseFloat(price),
-    active:      parseInt(document.getElementById('pr-active').value),
-    description: document.getElementById('pr-desc').value,
-    badge_text:  document.getElementById('pr-badge').value,
-    badge_color: document.getElementById('pr-badge-color').value,
-    tags,
-    image_url:   document.getElementById('pr-img').value,
+    name, category: document.getElementById('prCat').value,
+    price: parseFloat(price), active: parseInt(document.getElementById('prActive').value),
+    description: document.getElementById('prDesc').value,
+    badge_text: document.getElementById('prBadge').value,
+    badge_color: document.getElementById('prBadgeColor').value,
+    tags, image_url: document.getElementById('prImg').value,
   };
-
-  let d;
-  if (id) { d = await api('PUT', `/products/${id}`, body); }
-  else    { d = await api('POST', '/products', body); }
-
-  if (!d.ok) { toast(d.error || 'Error saving', 'err'); return; }
-  toast(id ? 'Product updated ✓' : 'Product created ✓', 'ok');
-  closeModal('modal-pr');
-  loadProducts();
+  const d = id ? await apiFetch('PUT',`/products/${id}`,body) : await apiFetch('POST','/products',body);
+  if (!d?.ok) { toast(d?.error||'Error', 'err'); return; }
+  toast(id?'Updated ✓':'Created ✓', 'ok');
+  closeModal('modalProduct'); loadProducts();
 }
 
 async function deleteProduct() {
-  const id = document.getElementById('pr-id').value;
-  if (!id || !confirm('Delete this product permanently?')) return;
-  await api('DELETE', `/products/${id}`);
-  toast('Deleted', 'ok');
-  closeModal('modal-pr');
-  loadProducts();
+  const id = document.getElementById('prId').value;
+  if (!id || !confirm('Delete this product?')) return;
+  await apiFetch('DELETE', `/products/${id}`);
+  toast('Deleted', 'ok'); closeModal('modalProduct'); loadProducts();
 }
 
 async function toggleActive(id, active) {
   const p = products.find(x => x.id == id);
   if (!p) return;
-  await api('PUT', `/products/${id}`, { ...p, active, tags: parseTags(p.tags) });
-  toast(active ? 'Product now visible ✓' : 'Product hidden ✓', 'ok');
-  loadProducts();
+  await apiFetch('PUT', `/products/${id}`, {...p, active, tags: parseTags(p.tags)});
+  toast(active?'Now visible ✓':'Hidden ✓', 'ok'); loadProducts();
 }
 
-// ============================================================
-//  Calendar
-// ============================================================
+// ── Calendar ──────────────────────────────────────────────────
 async function loadCalendarData() {
-  const d = await api('GET', '/blocked-dates');
-  if (!d.ok) return;
+  const d = await apiFetch('GET', '/blocked-dates').catch(() => null);
+  if (!d?.ok) return;
   blockedDates = d.dates.map(x => x.date);
   renderCalendar();
 }
@@ -838,107 +664,89 @@ function calMonth(delta) {
 }
 
 function renderCalendar() {
-  const label   = new Date(calY, calM, 1).toLocaleString('en', {month:'long',year:'numeric'});
+  const label = new Date(calY, calM, 1).toLocaleString('en',{month:'long',year:'numeric'});
   document.getElementById('cal-label').textContent = label;
-
-  const today   = new Date().toISOString().split('T')[0];
-  const first   = new Date(calY, calM, 1).getDay();
-  const daysInM = new Date(calY, calM+1, 0).getDate();
-  const prevD   = new Date(calY, calM, 0).getDate();
-  const days    = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-
-  let html = days.map(d => `<div class="cal-dn">${d}</div>`).join('');
-
-  for (let i = first-1; i >= 0; i--)
-    html += `<div class="cal-day other"><div class="cal-num">${prevD-i}</div></div>`;
-
-  for (let d = 1; d <= daysInM; d++) {
+  const today  = new Date().toISOString().split('T')[0];
+  const first  = new Date(calY, calM, 1).getDay();
+  const daysM  = new Date(calY, calM+1, 0).getDate();
+  const prevD  = new Date(calY, calM, 0).getDate();
+  const days   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let html = days.map(d=>`<div class="cal-dn">${d}</div>`).join('');
+  for (let i=first-1;i>=0;i--) html+=`<div class="cal-day other"><div class="cal-num">${prevD-i}</div></div>`;
+  for (let d=1;d<=daysM;d++) {
     const ds  = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const blk = blockedDates.includes(ds);
-    const cnt = bookedDatesMap[ds] || 0;
-    let cls   = 'cal-day';
-    if (ds === today) cls += ' today';
-    if (blk) cls += ' blk';
-    if (cnt) cls += ' has-res';
-    const tags = (blk ? `<span class="cal-tag blk">🚫 Blocked</span>` : '') +
-                 (cnt ? `<span class="cal-tag res">📋 ${cnt}</span>` : '');
-    html += `<div class="${cls}" onclick="openDayModal('${ds}')"><div class="cal-num">${d}</div>${tags}</div>`;
+    const cnt = bookedMap[ds]||0;
+    let cls = 'cal-day';
+    if (ds===today) cls+=' today';
+    if (blk) cls+=' blk';
+    if (cnt) cls+=' has-res';
+    html+=`<div class="${cls}" onclick="openDayModal('${ds}')"><div class="cal-num">${d}</div>
+      ${blk?`<span class="cal-tag blk">🚫 Blocked</span>`:''}
+      ${cnt?`<span class="cal-tag res">📋 ${cnt}</span>`:''}
+    </div>`;
   }
-
-  const trailing = (first + daysInM) % 7;
-  if (trailing) for (let d = 1; d <= 7 - trailing; d++)
-    html += `<div class="cal-day other"><div class="cal-num">${d}</div></div>`;
-
+  const trail = (first+daysM)%7;
+  if (trail) for (let d=1;d<=7-trail;d++) html+=`<div class="cal-day other"><div class="cal-num">${d}</div></div>`;
   document.getElementById('cal-grid').innerHTML = html;
 }
 
 function openDayModal(ds) {
-  currentDayDate = ds;
-  const dt    = new Date(ds + 'T12:00:00');
-  const label = dt.toLocaleDateString('en-US', {weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  currentDay = ds;
+  const dt   = new Date(ds+'T12:00:00');
   const isBlk = blockedDates.includes(ds);
-  const dayBk = bookings.filter(b => b.event_date === ds && ['pending','confirmed'].includes(b.status));
-
-  document.getElementById('mday-title').textContent = label;
-  document.getElementById('mday-blk-btn').style.display   = isBlk ? 'none' : '';
-  document.getElementById('mday-unblk-btn').style.display = isBlk ? '' : 'none';
-
-  let body = isBlk ? `<div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;padding:.7rem 1rem;margin-bottom:.9rem;font-size:.83rem;font-weight:700;color:#dc2626">🚫 This date is blocked</div>` : '';
-
-  body += !dayBk.length ? `<p style="color:var(--muted);font-size:.83rem">No bookings for this date.</p>`
-    : dayBk.map(b => `<div style="background:var(--bg);border-radius:10px;padding:.7rem 1rem;margin-bottom:.5rem">
-        <div style="font-weight:800">${esc(b.booking_ref)} — ${esc(b.customer_name)}</div>
-        <div style="font-size:.77rem;color:var(--muted)">🎪 ${esc(b.item_name)} · ⏰ ${esc(b.event_time)}</div>
-        <button class="btn btn-gh btn-sm" style="margin-top:.4rem" onclick="closeModal('modal-day');openBooking(${b.id})">View detail →</button>
-      </div>`).join('');
-
-  document.getElementById('mday-body').innerHTML = body;
-  openModal('modal-day');
+  const dayBk = bookings.filter(b => b.event_date===ds && ['pending','confirmed'].includes(b.status));
+  document.getElementById('mdayTitle').textContent = dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('mdayBlkBtn').style.display   = isBlk?'none':'';
+  document.getElementById('mdayUnblkBtn').style.display = isBlk?'':'none';
+  let body = isBlk?`<div style="background:#fff0f0;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:800;color:#c00;font-size:.85rem">🚫 This date is blocked</div>`:'';
+  body += !dayBk.length ? `<div class="empty" style="padding:16px">No bookings for this date</div>` :
+    dayBk.map(b=>`<div style="background:#f7f8ff;border-radius:10px;padding:10px 14px;margin-bottom:8px">
+      <div style="font-weight:800">${esc(b.booking_ref)} — ${esc(b.customer_name)}</div>
+      <div style="font-size:.75rem;color:#aaa">🎪 ${esc(b.item_name)} · ⏰ ${esc(b.event_time)}</div>
+      <button class="action-btn btn-edit" style="margin-top:6px" onclick="closeModal('modalDay');openBooking(${b.id})">View →</button>
+    </div>`).join('');
+  document.getElementById('mdayBody').innerHTML = body;
+  openModal('modalDay');
 }
 
 async function doBlockDate() {
   const date   = document.getElementById('blk-date').value;
   const reason = document.getElementById('blk-reason').value;
-  if (!date) { toast('Select a date first', 'err'); return; }
-  await api('POST', '/blocked-dates', { date, reason });
+  if (!date) { toast('Select a date first','err'); return; }
+  await apiFetch('POST','/blocked-dates',{date,reason});
   if (!blockedDates.includes(date)) blockedDates.push(date);
-  renderCalendar();
-  document.getElementById('blk-date').value = '';
-  document.getElementById('blk-reason').value = '';
-  toast('Date blocked', 'ok');
+  bookedMap = {...bookedMap}; renderCalendar();
+  document.getElementById('blk-date').value='';
+  document.getElementById('blk-reason').value='';
+  toast('Date blocked','ok');
 }
 
 async function blockFromModal() {
-  if (!currentDayDate) return;
-  await api('POST', '/blocked-dates', { date: currentDayDate, reason: '' });
-  if (!blockedDates.includes(currentDayDate)) blockedDates.push(currentDayDate);
-  renderCalendar(); closeModal('modal-day'); toast('Date blocked', 'ok');
+  if (!currentDay) return;
+  await apiFetch('POST','/blocked-dates',{date:currentDay,reason:''});
+  if (!blockedDates.includes(currentDay)) blockedDates.push(currentDay);
+  renderCalendar(); closeModal('modalDay'); toast('Date blocked','ok');
 }
 
 async function unblockFromModal() {
-  if (!currentDayDate) return;
-  await api('DELETE', `/blocked-dates/${currentDayDate}`);
-  blockedDates = blockedDates.filter(d => d !== currentDayDate);
-  renderCalendar(); closeModal('modal-day'); toast('Date unblocked', 'ok');
+  if (!currentDay) return;
+  await apiFetch('DELETE',`/blocked-dates/${currentDay}`);
+  blockedDates = blockedDates.filter(d=>d!==currentDay);
+  renderCalendar(); closeModal('modalDay'); toast('Date unblocked','ok');
 }
 
-// ============================================================
-//  Helpers
-// ============================================================
-async function api(method, path, body) {
-  const opts = {
-    method,
-    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-  };
+// ── Helpers ───────────────────────────────────────────────────
+async function apiFetch(method, path, body) {
+  const opts = {method, headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}};
   if (body) opts.body = JSON.stringify(body);
-  const r = await fetch(`${API}${path}`, opts);
-  if (r.status === 401) { doLogout(); return { ok: false }; }
+  const r = await fetch(API+path, opts);
+  if (r.status===401) { doLogout(); return {ok:false}; }
   return r.json();
 }
 
-function openModal(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
-function bgClose(e, id) { if (e.target.id === id) closeModal(id); }
+function openModal(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
 
 function parseTags(tags) {
   if (!tags) return [];
@@ -946,19 +754,15 @@ function parseTags(tags) {
   try { return JSON.parse(tags); } catch { return []; }
 }
 
-function empty(msg) { return `<div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:.83rem">${msg}</div>`; }
-
 function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-let _toastTimer;
-function toast(msg, type = 'ok') {
+let _tt;
+function toast(msg, type='ok') {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = `toast ${type} show`;
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  t.textContent=msg; t.className=`toast ${type} show`;
+  clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),3000);
 }
 </script>
 </body>
