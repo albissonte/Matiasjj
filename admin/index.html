@@ -167,10 +167,10 @@ tr:hover td{background:#fff8f0;}
     <div style="font-size:2.5rem;margin-bottom:8px">🪂</div>
     <h1>Matias <span style="color:var(--or)">Jump Jumping</span></h1>
     <p>Admin Panel</p>
-    <div class="lfield"><label>Username</label><input type="text" id="loginUser" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="lfield"><label>Password</label><input type="password" id="loginPass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lfield"><label>Usuario</label><input type="text" id="loginUser" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lfield"><label>Contraseña</label><input type="password" id="loginPass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <div class="login-err" id="loginErr"></div>
-    <button class="btn-login" onclick="doLogin()">Enter Panel</button>
+    <button class="btn-login" onclick="doLogin()">Entrar al Panel</button>
   </div>
 </div>
 
@@ -229,7 +229,7 @@ tr:hover td{background:#fff8f0;}
   <div class="tab-content" id="tab-bookings">
     <div class="sec-header">
       <div class="sec-title">Todas las reservas</div>
-      <input class="search-bar" type="text" placeholder="🔍 Search…" oninput="searchBookings(this.value)" style="width:200px">
+      <input class="search-bar" type="text" placeholder="🔍 Buscar…" oninput="searchBookings(this.value)" style="width:200px">
     </div>
     <div class="filter-row" id="bk-filters">
       <div class="f-chip active" onclick="filterBk(this,'')">Todo</div>
@@ -241,7 +241,7 @@ tr:hover td{background:#fff8f0;}
     <div class="table-wrap">
       <table>
         <thead><tr><th>Ref</th><th>Cliente</th><th>Ítem</th><th>Fecha</th><th>Hora</th><th>Estado</th><th>Acciones</th></tr></thead>
-        <tbody id="bookingsTbody"><tr><td colspan="7" class="loading">Loading…</td></tr></tbody>
+        <tbody id="bookingsTbody"><tr><td colspan="7" class="loading">Carga y carga…</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -261,7 +261,7 @@ tr:hover td{background:#fff8f0;}
         <div style="background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:14px">
           <div style="font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:12px">🚫 Bloquear una fecha</div>
           <div class="mfield"><label>Fecha</label><input type="date" id="blk-date"></div>
-          <div class="mfield"><label>Motivo</label><input type="text" id="blk-reason" placeholder="Holiday…"></div>
+          <div class="mfield"><label>Motivo</label><input type="text" id="blk-reason" placeholder="Vacaciones…"></div>
           <button class="btn-primary" style="width:100%;background:linear-gradient(135deg,#ef4444,#dc2626)" onclick="doBlockDate()">Bloquear fecha</button>
         </div>
         <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 4px 16px rgba(0,0,0,.07);font-size:.8rem">
@@ -278,7 +278,7 @@ tr:hover td{background:#fff8f0;}
   <div class="tab-content" id="tab-products">
     <div class="sec-header">
       <div class="sec-title">Producto Catálogo</div>
-      <button class="btn-primary" onclick="openProductModal()">+ Añadir Producto</button>
+      <button class="btn-primary" onclick="openProductModal()">Añadir Producto</button>
     </div>
     <div class="filter-row" id="pr-filters">
       <div class="f-chip active" onclick="filterPr(this,'')">Todo</div>
@@ -328,10 +328,10 @@ tr:hover td{background:#fff8f0;}
         </select>
       </div>
     </div>
-    <div class="mfield"><label>Descripción</label><textarea id="prDesc" placeholder="Brief description…"></textarea></div>
+    <div class="mfield"><label>Descripción</label><textarea id="prDesc" placeholder="Breve descripción…"></textarea></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="mfield"><label>Badge text</label><input type="text" id="prBadge" placeholder="🏰 Castle"></div>
-      <div class="mfield"><label>Badge color</label><input type="color" id="prBadgeColor" value="#FF6B00" style="height:42px;padding:4px"></div>
+      <div class="mfield"><label>Texto insignia</label><input type="text" id="prBadge" placeholder="🏰 Castillo"></div>
+      <div class="mfield"><label>Color insignia</label><input type="color" id="prBadgeColor" value="#FF6B00" style="height:42px;padding:4px"></div>
     </div>
     <div class="mfield"><label>Etiquetas (separado por coma)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
     <div class="mfield"><label>URL de la imagen</label><input type="url" id="prImg" placeholder="https://…"></div>
@@ -450,13 +450,13 @@ async function loadStats() {
 
   // Upcoming
   const ul = document.getElementById('upcomingList');
-  if (!s.upcoming?.length) { ul.innerHTML = '<div class="empty">No upcoming events</div>'; }
+  if (!s.upcoming?.length) { ul.innerHTML = '<div class="empty">No hay eventos próximos</div>'; }
   else ul.innerHTML = s.upcoming.map(b => {
     const dt = new Date(b.event_date + 'T12:00:00');
     return `<div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;align-items:center;gap:10px">
       <div style="background:var(--or);color:#fff;border-radius:8px;padding:4px 8px;text-align:center;min-width:40px;flex-shrink:0">
         <div style="font-family:'Fredoka One',cursive;font-size:.95rem;line-height:1">${dt.getDate()}</div>
-        <div style="font-size:.55rem;font-weight:800;text-transform:uppercase">${dt.toLocaleString('en',{month:'short'})}</div>
+        <div style="font-size:.55rem;font-weight:800;text-transform:uppercase">${dt.toLocaleString('es',{month:'short'})}</div>
       </div>
       <div style="flex:1;min-width:0">
         <div style="font-weight:800;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.customer_name)}</div>
@@ -481,13 +481,13 @@ async function loadBookings() {
   // Pending list on dashboard
   const pl = document.getElementById('pendingList');
   const pending = bookings.filter(b => b.status === 'pending').slice(0,5);
-  pl.innerHTML = !pending.length ? '<div class="empty">No pending 🎉</div>' :
+  pl.innerHTML = !pending.length ? '<div class="empty">Ningún pendiente 🎉</div>' :
     pending.map(b => `<div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;gap:8px">
       <div>
         <div style="font-weight:800;font-size:.85rem">${esc(b.booking_ref)}</div>
         <div style="font-size:.72rem;color:#aaa">${esc(b.customer_name)} · ${b.event_date}</div>
       </div>
-      <button class="action-btn btn-edit" onclick="openBooking(${b.id})">View →</button>
+      <button class="action-btn btn-edit" onclick="openBooking(${b.id})">Ver</button>
     </div>`).join('');
 }
 
@@ -495,7 +495,7 @@ function renderBookings(list) {
   let rows = list || bookings;
   if (bkFilter) rows = rows.filter(b => b.status === bkFilter);
   const tbody = document.getElementById('bookingsTbody');
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">No bookings found</td></tr>'; return; }
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">No hay reservas</td></tr>'; return; }
   tbody.innerHTML = rows.map(b => `<tr>
     <td><strong>${esc(b.booking_ref)}</strong></td>
     <td><div style="font-weight:800">${esc(b.customer_name)}</div><div style="font-size:.72rem;color:#aaa">${esc(b.customer_email)}</div></td>
@@ -503,7 +503,7 @@ function renderBookings(list) {
     <td><strong>${b.event_date}</strong></td>
     <td>${esc(b.event_time)}</td>
     <td><span class="badge badge-${b.status}">${b.status}</span></td>
-    <td><button class="action-btn btn-edit" onclick="openBooking(${b.id})">View →</button></td>
+    <td><button class="action-btn btn-edit" onclick="openBooking(${b.id})">Ver</button></td>
   </tr>`).join('');
 }
 
@@ -529,28 +529,28 @@ async function openBooking(id) {
   document.getElementById('mbkTitle').textContent = `${b.booking_ref} — ${b.customer_name}`;
   document.getElementById('mbkBody').innerHTML = `
     <div class="detail-row">
-      <div class="detail-item"><label>Client</label><p>${esc(b.customer_name)}</p></div>
+      <div class="detail-item"><label>Cliente</label><p>${esc(b.customer_name)}</p></div>
       <div class="detail-item"><label>Email</label><p>${esc(b.customer_email)}</p></div>
-      <div class="detail-item"><label>Phone</label><p>${esc(b.customer_phone||'—')}</p></div>
-      <div class="detail-item"><label>Status</label><p><span class="badge badge-${b.status}">${b.status}</span></p></div>
-      <div class="detail-item"><label>Event Date</label><p><strong>${b.event_date}</strong></p></div>
-      <div class="detail-item"><label>Time</label><p>${esc(b.event_time)}</p></div>
+      <div class="detail-item"><label>Teléfono</label><p>${esc(b.customer_phone||'—')}</p></div>
+      <div class="detail-item"><label>Estado</label><p><span class="badge badge-${b.status}">${b.status}</span></p></div>
+      <div class="detail-item"><label>Fecha del evento</label><p><strong>${b.event_date}</strong></p></div>
+      <div class="detail-item"><label>Hora</label><p>${esc(b.event_time)}</p></div>
     </div>
     <div class="mfield"><label>Address</label><p style="font-size:.88rem;font-weight:700;padding:4px 0">${esc(b.delivery_address)}</p></div>
     <div style="background:#fff8f0;border-radius:10px;padding:12px;margin:10px 0"><strong style="font-family:'Fredoka One',cursive">🎪 ${esc(b.item_name)}</strong></div>
     ${b.notes ? `<div class="mfield"><label>Customer notes</label><p style="font-size:.85rem;color:#888;padding:4px 0">${esc(b.notes)}</p></div>` : ''}
     <div class="mfield"><label>Internal notes</label>
-      <textarea id="bkNotes" style="width:100%;padding:10px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;outline:none;min-height:70px" placeholder="Only you see this…">${esc(b.internal_notes||'')}</textarea>
-      <button class="action-btn btn-edit" style="margin-top:4px" onclick="saveNotes()">Save notes</button>
+      <textarea id="bkNotes" style="width:100%;padding:10px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;outline:none;min-height:70px" placeholder="Solo tú ves esto…">${esc(b.internal_notes||'')}</textarea>
+      <button class="action-btn btn-edit" style="margin-top:4px" onclick="saveNotes()">Guardar notas</button>
     </div>
     <div style="margin-top:10px">
-      <a href="https://wa.me/15718398914?text=${encodeURIComponent('Hi '+b.customer_name+'! Your booking '+b.booking_ref+' for '+b.event_date+' is confirmed ✅')}" target="_blank" class="action-btn btn-wa">💬 WhatsApp client</a>
+      <a href="https://wa.me/15718398914?text=${encodeURIComponent('Hola '+b.customer_name+'! Tu reserva '+b.booking_ref+' para el '+b.event_date+' está confirmado ✅')}" target="_blank" class="action-btn btn-wa">💬 WhatsApp del cliente</a>
     </div>`;
   document.getElementById('mbkBtns').innerHTML = `
-    <button class="btn-secondary" onclick="closeModal('modalBooking')">Close</button>
-    ${b.status==='pending'?`<button class="action-btn btn-confirm" onclick="changeStatus('confirmed')">✅ Confirm</button>`:''}
-    ${['pending','confirmed'].includes(b.status)?`<button class="action-btn btn-cancel" onclick="changeStatus('cancelled')">❌ Cancel</button>`:''}
-    ${b.status==='confirmed'?`<button class="action-btn btn-complete" onclick="changeStatus('completed')">🎉 Complete</button>`:''}
+    <button class="btn-secondary" onclick="closeModal('modalBooking')">Cerrar</button>
+    ${b.status==='pending'?`<button class="action-btn btn-confirm" onclick="changeStatus('confirmed')">✅ Confirmado</button>`:''}
+    ${['pending','confirmed'].includes(b.status)?`<button class="action-btn btn-cancel" onclick="changeStatus('cancelled')">❌ Cancelado</button>`:''}
+    ${b.status==='confirmed'?`<button class="action-btn btn-complete" onclick="changeStatus('completed')">🎉 Completado</button>`:''}
     <button class="action-btn btn-delete" onclick="deleteBk()">🗑</button>`;
   openModal('modalBooking');
 }
@@ -560,7 +560,7 @@ async function changeStatus(status) {
   const b = bookings.find(x => x.id == currentBkId);
   if (b) b.status = status;
   renderBookings(); closeModal('modalBooking'); loadStats();
-  toast('Status → ' + status, 'ok');
+  toast('Estado' + status, 'ok');
 }
 
 async function saveNotes() {
@@ -568,15 +568,15 @@ async function saveNotes() {
   await apiFetch('POST', `/bookings/${currentBkId}`, {internal_notes: notes});
   const b = bookings.find(x => x.id == currentBkId);
   if (b) b.internal_notes = notes;
-  toast('Notes saved ✓', 'ok');
+  toast('Notas guardadas ✓', 'ok');
 }
 
 async function deleteBk() {
-  if (!confirm('Delete this booking?')) return;
-  await apiFetch('DELETE', `/bookings/${currentBkId}`);
+  if (!confirm('¿Eliminar esta reserva?')) return;
+  await apiFetch('ELIMINAR', `/bookings/${currentBkId}`);
   bookings = bookings.filter(x => x.id != currentBkId);
   renderBookings(); closeModal('modalBooking'); loadStats();
-  toast('Deleted', 'ok');
+  toast('Eliminado', 'ok');
 }
 
 // ── Products ──────────────────────────────────────────────────
@@ -591,7 +591,7 @@ async function loadProducts() {
 function renderProducts() {
   const grid = document.getElementById('prodGrid');
   let list = prFilter ? products.filter(p => p.category === prFilter) : products;
-  if (!list.length) { grid.innerHTML = '<div class="empty">No products found</div>'; return; }
+  if (!list.length) { grid.innerHTML = '<div class="empty">No hay productos</div>'; return; }
   const icons = {combo:'🎪',castle:'🏰',mini:'⚡',water:'💦',chairs:'🪑',extras:'➕'};
   grid.innerHTML = list.map(p => `
     <div class="prod-card ${p.active?'':'inactive'}">
@@ -604,8 +604,8 @@ function renderProducts() {
       <div class="prod-price">$${parseFloat(p.price).toFixed(2)}</div>
       ${p.description?`<div style="font-size:.78rem;color:#888;margin-bottom:10px;line-height:1.5">${esc(p.description)}</div>`:''}
       <div class="prod-actions">
-        <button class="action-btn btn-edit" onclick="openProductModal(${p.id})">✏️ Edit</button>
-        <button class="action-btn ${p.active?'btn-cancel':'btn-confirm'}" onclick="toggleActive(${p.id},${p.active?0:1})">${p.active?'🙈 Hide':'👁 Show'}</button>
+        <button class="action-btn btn-edit" onclick="openProductModal(${p.id})">✏️ Editar</button>
+        <button class="action-btn ${p.active?'btn-cancel':'btn-confirm'}" onclick="toggleActive(${p.id},${p.active?0:1})">${p.active?'🙈 Ocultar':'👁 Mostrar'}</button>
       </div>
     </div>`).join('');
 }
@@ -636,7 +636,7 @@ async function saveProduct() {
   const id    = document.getElementById('prId').value;
   const name  = document.getElementById('prName').value.trim();
   const price = document.getElementById('prPrice').value;
-  if (!name || price === '') { toast('Name and price required', 'err'); return; }
+  if (!name || price === '') { toast('Nombre y precio requerido', 'err'); return; }
   const tagsRaw = document.getElementById('prTags').value;
   const tags    = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
   const body = {
@@ -649,22 +649,22 @@ async function saveProduct() {
   };
   const d = id ? await apiFetch('PUT',`/products/${id}`,body) : await apiFetch('POST','/products',body);
   if (!d?.ok) { toast(d?.error||'Error', 'err'); return; }
-  toast(id?'Updated ✓':'Created ✓', 'ok');
+  toast(id?'Actualizado ✓':'Creado ✓', 'ok');
   closeModal('modalProduct'); loadProducts();
 }
 
 async function deleteProduct() {
   const id = document.getElementById('prId').value;
-  if (!id || !confirm('Delete this product?')) return;
-  await apiFetch('DELETE', `/products/${id}`);
-  toast('Deleted', 'ok'); closeModal('modalProduct'); loadProducts();
+  if (!id || !confirm('¿Eliminar este producto?')) return;
+  await apiFetch('ELIMINAR', `/products/${id}`);
+  toast('Eliminado', 'ok'); closeModal('modalProduct'); loadProducts();
 }
 
 async function toggleActive(id, active) {
   const p = products.find(x => x.id == id);
   if (!p) return;
   await apiFetch('PUT', `/products/${id}`, {...p, active, tags: parseTags(p.tags)});
-  toast(active?'Now visible ✓':'Hidden ✓', 'ok'); loadProducts();
+  toast(active?'Ahora visible ✓':'Oculto ✓', 'ok'); loadProducts();
 }
 
 // ── Calendar ──────────────────────────────────────────────────
@@ -683,13 +683,13 @@ function calMonth(delta) {
 }
 
 function renderCalendar() {
-  const label = new Date(calY, calM, 1).toLocaleString('en',{month:'long',year:'numeric'});
+  const label = new Date(calY, calM, 1).toLocaleString('es',{month:'long',year:'numeric'});
   document.getElementById('cal-label').textContent = label;
   const today  = new Date().toISOString().split('T')[0];
   const first  = new Date(calY, calM, 1).getDay();
   const daysM  = new Date(calY, calM+1, 0).getDate();
   const prevD  = new Date(calY, calM, 0).getDate();
-  const days   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const days   = ['Do','Lu','Ma','Mi','Ju','Vi','Sa'];
   let html = days.map(d=>`<div class="cal-dn">${d}</div>`).join('');
   for (let i=first-1;i>=0;i--) html+=`<div class="cal-day other"><div class="cal-num">${prevD-i}</div></div>`;
   for (let d=1;d<=daysM;d++) {
@@ -701,7 +701,7 @@ function renderCalendar() {
     if (blk) cls+=' blk';
     if (cnt) cls+=' has-res';
     html+=`<div class="${cls}" onclick="openDayModal('${ds}')"><div class="cal-num">${d}</div>
-      ${blk?`<span class="cal-tag blk">🚫 Blocked</span>`:''}
+      ${blk?`<span class="cal-tag blk">🚫 Bloqueado</span>`:''}
       ${cnt?`<span class="cal-tag res">📋 ${cnt}</span>`:''}
     </div>`;
   }
@@ -718,12 +718,12 @@ function openDayModal(ds) {
   document.getElementById('mdayTitle').textContent = dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   document.getElementById('mdayBlkBtn').style.display   = isBlk?'none':'';
   document.getElementById('mdayUnblkBtn').style.display = isBlk?'':'none';
-  let body = isBlk?`<div style="background:#fff0f0;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:800;color:#c00;font-size:.85rem">🚫 This date is blocked</div>`:'';
-  body += !dayBk.length ? `<div class="empty" style="padding:16px">No bookings for this date</div>` :
+  let body = isBlk?`<div style="background:#fff0f0;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:800;color:#c00;font-size:.85rem">🚫 Esta fecha está bloqueada</div>`:'';
+  body += !dayBk.length ? `<div class="empty" style="padding:16px">No hay reservas para esta fecha</div>` :
     dayBk.map(b=>`<div style="background:#f7f8ff;border-radius:10px;padding:10px 14px;margin-bottom:8px">
       <div style="font-weight:800">${esc(b.booking_ref)} — ${esc(b.customer_name)}</div>
       <div style="font-size:.75rem;color:#aaa">🎪 ${esc(b.item_name)} · ⏰ ${esc(b.event_time)}</div>
-      <button class="action-btn btn-edit" style="margin-top:6px" onclick="closeModal('modalDay');openBooking(${b.id})">View →</button>
+      <button class="action-btn btn-edit" style="margin-top:6px" onclick="closeModal('modalDay');openBooking(${b.id})">Ver</button>
     </div>`).join('');
   document.getElementById('mdayBody').innerHTML = body;
   openModal('modalDay');
@@ -732,27 +732,27 @@ function openDayModal(ds) {
 async function doBlockDate() {
   const date   = document.getElementById('blk-date').value;
   const reason = document.getElementById('blk-reason').value;
-  if (!date) { toast('Select a date first','err'); return; }
+  if (!date) { toast('Selecciona una fecha primero','err'); return; }
   await apiFetch('POST','/blocked-dates',{date,reason});
   if (!blockedDates.includes(date)) blockedDates.push(date);
   bookedMap = {...bookedMap}; renderCalendar();
   document.getElementById('blk-date').value='';
   document.getElementById('blk-reason').value='';
-  toast('Date blocked','ok');
+  toast('Fecha bloqueada','ok');
 }
 
 async function blockFromModal() {
   if (!currentDay) return;
   await apiFetch('POST','/blocked-dates',{date:currentDay,reason:''});
   if (!blockedDates.includes(currentDay)) blockedDates.push(currentDay);
-  renderCalendar(); closeModal('modalDay'); toast('Date blocked','ok');
+  renderCalendar(); closeModal('modalDay'); toast('Fecha bloqueada','ok');
 }
 
 async function unblockFromModal() {
   if (!currentDay) return;
-  await apiFetch('DELETE',`/blocked-dates/${currentDay}`);
+  await apiFetch('ELIMINAR',`/blocked-dates/${currentDay}`);
   blockedDates = blockedDates.filter(d=>d!==currentDay);
-  renderCalendar(); closeModal('modalDay'); toast('Date unblocked','ok');
+  renderCalendar(); closeModal('modalDay'); toast('Fecha desbloqueada','ok');
 }
 
 // ── Helpers ───────────────────────────────────────────────────
