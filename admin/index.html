@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Matias Admin Zone</title>
+<title>Admin — Matias Jump Jumping</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--or:#FF6B00;--pk:#FF1493;--gr:#00C94A;--bl:#00AAFF;--dk:#141414;--bg:#f7f8ff;}
@@ -33,6 +33,12 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dk);}
 .top-bar-logo span{color:var(--or);}
 .top-bar-right{display:flex;align-items:center;gap:10px;}
 .hamburger{display:none;background:none;border:none;font-size:1.6rem;cursor:pointer;padding:2px 6px;}
+/* ── DROPDOWN MENU ── */
+.drop-menu{display:none;position:fixed;top:60px;left:0;right:0;background:#fff;border-bottom:3px solid var(--or);z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.15);}
+.drop-menu.open{display:block;}
+.drop-item{display:flex;align-items:center;gap:12px;padding:16px 20px;font-weight:800;font-size:1rem;cursor:pointer;border-bottom:1px solid #f0f0f0;transition:.15s;}
+.drop-item:hover,.drop-item.active{background:#fff8f0;color:var(--or);}
+.drop-item:last-child{border-bottom:none;}
 .btn-logout{padding:7px 16px;background:#f0f0f0;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;transition:.2s;}
 .btn-logout:hover{background:#ffdddd;color:#c00;}
 
@@ -145,7 +151,7 @@ tr:hover td{background:#fff8f0;}
 
 /* ── MOBILE ── */
 @media(max-width:600px){
-  .hamburger{display:block;}
+  .hamburger{display:block!important;}
   .tab-btn{padding:10px 12px;font-size:.78rem;}
   .detail-row{grid-template-columns:1fr;}
 }
@@ -159,24 +165,30 @@ tr:hover td{background:#fff8f0;}
 <div id="loginScreen">
   <div class="login-box">
     <div style="font-size:2.5rem;margin-bottom:8px">🪂</div>
-    <h1>Matias <span style="color:var(--or)">Jump Jumping</span></h1>
-    <p>Administración</p>
+    <h1>Matias <span style="color:var(--or)">Jump</span></h1>
+    <p>Admin Panel</p>
     <div class="lfield"><label>Username</label><input type="text" id="loginUser" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <div class="lfield"><label>Password</label><input type="password" id="loginPass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <div class="login-err" id="loginErr"></div>
-    <button class="btn-login" onclick="doLogin()">Enter Panel</button>
+    <button class="btn-login" onclick="doLogin()">Enter Panel →</button>
   </div>
 </div>
 
 <!-- ══ APP ══ -->
 <div id="sb-overlay" onclick="closeSidebar()"></div>
+<div class="drop-menu" id="drop-menu">
+  <div class="drop-item active" onclick="showTab('dashboard');closeSidebar()">📊 Dashboard</div>
+  <div class="drop-item" onclick="showTab('bookings');closeSidebar()">📋 Bookings</div>
+  <div class="drop-item" onclick="showTab('calendar');closeSidebar()">📅 Calendar</div>
+  <div class="drop-item" onclick="showTab('products');closeSidebar()">🎪 Products</div>
+</div>
 <div id="adminApp">
 
   <!-- Top Bar -->
   <div class="top-bar">
     <div style="display:flex;align-items:center;gap:10px">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <div class="top-bar-logo">🏰 Matias <span>J.J.</span></div>
+      <div class="top-bar-logo">🏰 Matias <span>Jump</span></div>
     </div>
     <div class="top-bar-right">
       <span id="topbar-subtitle" style="font-size:.78rem;color:#aaa;font-weight:700">Dashboard</span>
@@ -236,7 +248,7 @@ tr:hover td{background:#fff8f0;}
 
   <!-- ── CALENDAR ── -->
   <div class="tab-content" id="tab-calendar">
-    <div style="display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:20px">
       <div>
         <div class="cal-nav">
           <button class="action-btn btn-edit" onclick="calMonth(-1)">← Prev</button>
@@ -396,8 +408,12 @@ function showApp() {
 function showTab(name) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.drop-item').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(name.slice(0,4))) b.classList.add('active');
+  });
+  document.querySelectorAll('.drop-item').forEach(b => {
     if (b.textContent.toLowerCase().includes(name.slice(0,4))) b.classList.add('active');
   });
   document.getElementById('topbar-subtitle').textContent = name.charAt(0).toUpperCase() + name.slice(1);
@@ -407,10 +423,13 @@ function showTab(name) {
 
 // ── Sidebar mobile ────────────────────────────────────────────
 function toggleSidebar() {
-  // On mobile we just convert tabs-bar to a vertical menu via overlay
-  document.getElementById('sb-overlay').classList.toggle('show');
+  const menu = document.getElementById('drop-menu');
+  const overlay = document.getElementById('sb-overlay');
+  menu.classList.toggle('open');
+  overlay.classList.toggle('show');
 }
 function closeSidebar() {
+  document.getElementById('drop-menu').classList.remove('open');
   document.getElementById('sb-overlay').classList.remove('show');
 }
 
