@@ -165,22 +165,22 @@ tr:hover td{background:#fff8f0;}
 <div id="loginScreen">
   <div class="login-box">
     <div style="font-size:2.5rem;margin-bottom:8px">🪂</div>
-    <h1>Matias <span style="color:var(--or)">Jump</span></h1>
+    <h1>Matias <span style="color:var(--or)">Jump Jumping</span></h1>
     <p>Admin Panel</p>
     <div class="lfield"><label>Username</label><input type="text" id="loginUser" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <div class="lfield"><label>Password</label><input type="password" id="loginPass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <div class="login-err" id="loginErr"></div>
-    <button class="btn-login" onclick="doLogin()">Enter Panel →</button>
+    <button class="btn-login" onclick="doLogin()">Enter Panel</button>
   </div>
 </div>
 
 <!-- ══ APP ══ -->
 <div id="sb-overlay" onclick="closeSidebar()"></div>
 <div class="drop-menu" id="drop-menu">
-  <div class="drop-item active" onclick="showTab('dashboard');closeSidebar()">📊 Dashboard</div>
+  <div class="drop-item active" onclick="showTab('dashboard');closeSidebar()">📊 Panel de control</div>
   <div class="drop-item" onclick="showTab('bookings');closeSidebar()">📋 Bookings</div>
   <div class="drop-item" onclick="showTab('calendar');closeSidebar()">📅 Calendar</div>
-  <div class="drop-item" onclick="showTab('products');closeSidebar()">🎪 Products</div>
+  <div class="drop-item" onclick="showTab('products');closeSidebar()">🛝 Products</div>
 </div>
 <div id="adminApp">
 
@@ -188,39 +188,39 @@ tr:hover td{background:#fff8f0;}
   <div class="top-bar">
     <div style="display:flex;align-items:center;gap:10px">
       <button class="hamburger" onclick="toggleSidebar()">☰</button>
-      <div class="top-bar-logo">🏰 Matias <span>Jump</span></div>
+      <div class="top-bar-logo">🪂 Matias <span>Jump Jumping</span></div>
     </div>
     <div class="top-bar-right">
-      <span id="topbar-subtitle" style="font-size:.78rem;color:#aaa;font-weight:700">Dashboard</span>
-      <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
+      <span id="topbar-subtitle" style="font-size:.78rem;color:#aaa;font-weight:700">Panel de control</span>
+      <button class="btn-logout" onclick="doLogout()">Cerrar sesión</button>
     </div>
   </div>
 
   <!-- Tabs -->
   <div class="tabs-bar" id="tabs-bar">
-    <button class="tab-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
-    <button class="tab-btn" onclick="showTab('bookings')">📋 Bookings</button>
-    <button class="tab-btn" onclick="showTab('calendar')">📅 Calendar</button>
-    <button class="tab-btn" onclick="showTab('products')">🎪 Products</button>
+    <button class="tab-btn active" onclick="showTab('dashboard')">📊 Panel de control</button>
+    <button class="tab-btn" onclick="showTab('bookings')">📋 Reservas</button>
+    <button class="tab-btn" onclick="showTab('calendar')">📅 Calendario</button>
+    <button class="tab-btn" onclick="showTab('products')">🛝 Productos</button>
   </div>
 
   <!-- ── DASHBOARD ── -->
   <div class="tab-content active" id="tab-dashboard">
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="stTotal">—</div><div class="stat-lbl">Total</div></div>
-      <div class="stat-card"><div class="stat-num" id="stPending" style="color:#e65c00">—</div><div class="stat-lbl">Pending</div></div>
-      <div class="stat-card"><div class="stat-num" id="stConfirmed" style="color:var(--gr)">—</div><div class="stat-lbl">Confirmed</div></div>
-      <div class="stat-card"><div class="stat-num" id="stProducts" style="color:var(--bl)">—</div><div class="stat-lbl">Products</div></div>
+      <div class="stat-card"><div class="stat-num" id="stPending" style="color:#e65c00">—</div><div class="stat-lbl">Pendientes</div></div>
+      <div class="stat-card"><div class="stat-num" id="stConfirmed" style="color:var(--gr)">—</div><div class="stat-lbl">Confirmados</div></div>
+      <div class="stat-card"><div class="stat-num" id="stProducts" style="color:var(--bl)">—</div><div class="stat-lbl">Productos</div></div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div>
-        <div class="sec-title" style="margin-bottom:12px">📅 Next 7 days</div>
-        <div id="upcomingList" class="loading">Loading…</div>
+        <div class="sec-title" style="margin-bottom:12px">📅 Próximos 7 días</div>
+        <div id="upcomingList" class="loading">Cargando choquito…</div>
       </div>
       <div>
-        <div class="sec-title" style="margin-bottom:12px">⏳ Pending approval</div>
-        <div id="pendingList" class="loading">Loading…</div>
+        <div class="sec-title" style="margin-bottom:12px">⏳ Pendiente de aprobación</div>
+        <div id="pendingList" class="loading">Espera un ratito…</div>
       </div>
     </div>
   </div>
@@ -228,19 +228,19 @@ tr:hover td{background:#fff8f0;}
   <!-- ── BOOKINGS ── -->
   <div class="tab-content" id="tab-bookings">
     <div class="sec-header">
-      <div class="sec-title">All Bookings</div>
+      <div class="sec-title">Todas las reservas</div>
       <input class="search-bar" type="text" placeholder="🔍 Search…" oninput="searchBookings(this.value)" style="width:200px">
     </div>
     <div class="filter-row" id="bk-filters">
-      <div class="f-chip active" onclick="filterBk(this,'')">All</div>
-      <div class="f-chip" onclick="filterBk(this,'pending')">⏳ Pending</div>
-      <div class="f-chip" onclick="filterBk(this,'confirmed')">✅ Confirmed</div>
-      <div class="f-chip" onclick="filterBk(this,'cancelled')">❌ Cancelled</div>
-      <div class="f-chip" onclick="filterBk(this,'completed')">🎉 Completed</div>
+      <div class="f-chip active" onclick="filterBk(this,'')">Todo</div>
+      <div class="f-chip" onclick="filterBk(this,'pending')">⏳ Pendiente</div>
+      <div class="f-chip" onclick="filterBk(this,'confirmed')">✅ Confirmado</div>
+      <div class="f-chip" onclick="filterBk(this,'cancelled')">❌ Cancelado</div>
+      <div class="f-chip" onclick="filterBk(this,'completed')">🎉 Completado</div>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Ref</th><th>Client</th><th>Item</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Ref</th><th>Cliente</th><th>Ítem</th><th>Fecha</th><th>Hora</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody id="bookingsTbody"><tr><td colspan="7" class="loading">Loading…</td></tr></tbody>
       </table>
     </div>
@@ -251,24 +251,24 @@ tr:hover td{background:#fff8f0;}
     <div style="display:flex;flex-direction:column;gap:20px">
       <div>
         <div class="cal-nav">
-          <button class="action-btn btn-edit" onclick="calMonth(-1)">← Prev</button>
+          <button class="action-btn btn-edit" onclick="calMonth(-1)">Anterior</button>
           <h3 id="cal-label">—</h3>
-          <button class="action-btn btn-edit" onclick="calMonth(1)">Next →</button>
+          <button class="action-btn btn-edit" onclick="calMonth(1)">Siguiente</button>
         </div>
         <div class="cal-grid" id="cal-grid"></div>
       </div>
       <div>
         <div style="background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:14px">
-          <div style="font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:12px">🚫 Block a date</div>
-          <div class="mfield"><label>Date</label><input type="date" id="blk-date"></div>
-          <div class="mfield"><label>Reason</label><input type="text" id="blk-reason" placeholder="Holiday…"></div>
-          <button class="btn-primary" style="width:100%;background:linear-gradient(135deg,#ef4444,#dc2626)" onclick="doBlockDate()">Block date</button>
+          <div style="font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:12px">🚫 Bloquear una fecha</div>
+          <div class="mfield"><label>Fecha</label><input type="date" id="blk-date"></div>
+          <div class="mfield"><label>Motivo</label><input type="text" id="blk-reason" placeholder="Holiday…"></div>
+          <button class="btn-primary" style="width:100%;background:linear-gradient(135deg,#ef4444,#dc2626)" onclick="doBlockDate()">Bloquear fecha</button>
         </div>
         <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 4px 16px rgba(0,0,0,.07);font-size:.8rem">
-          <div style="font-family:'Fredoka One',cursive;margin-bottom:10px">Legend</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#f0fff4;border:1.5px solid #aaddbb"></div>Has bookings</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#fff0f0;border:1.5px solid #ffaaaa"></div>Blocked</div>
-          <div style="display:flex;align-items:center;gap:8px"><div style="width:14px;height:14px;border-radius:3px;background:#f0f8ff;border:1.5px solid var(--bl)"></div>Today</div>
+          <div style="font-family:'Fredoka One',cursive;margin-bottom:10px">Leyenda</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#f0fff4;border:1.5px solid #aaddbb"></div>Tiene reservas</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#fff0f0;border:1.5px solid #ffaaaa"></div>Bloquedo</div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:14px;height:14px;border-radius:3px;background:#f0f8ff;border:1.5px solid var(--bl)"></div>Hoy</div>
         </div>
       </div>
     </div>
@@ -277,19 +277,19 @@ tr:hover td{background:#fff8f0;}
   <!-- ── PRODUCTS ── -->
   <div class="tab-content" id="tab-products">
     <div class="sec-header">
-      <div class="sec-title">Product Catalog</div>
-      <button class="btn-primary" onclick="openProductModal()">+ Add Product</button>
+      <div class="sec-title">Producto Catálogo</div>
+      <button class="btn-primary" onclick="openProductModal()">+ Añadir Producto</button>
     </div>
     <div class="filter-row" id="pr-filters">
-      <div class="f-chip active" onclick="filterPr(this,'')">All</div>
+      <div class="f-chip active" onclick="filterPr(this,'')">Todo</div>
       <div class="f-chip" onclick="filterPr(this,'combo')">🎪 Combo</div>
-      <div class="f-chip" onclick="filterPr(this,'castle')">🏰 Castle</div>
+      <div class="f-chip" onclick="filterPr(this,'castle')">🏰 Castillo</div>
       <div class="f-chip" onclick="filterPr(this,'mini')">⚡ Mini</div>
-      <div class="f-chip" onclick="filterPr(this,'water')">💦 Water</div>
-      <div class="f-chip" onclick="filterPr(this,'chairs')">🪑 Chairs</div>
+      <div class="f-chip" onclick="filterPr(this,'water')">💦 Agua</div>
+      <div class="f-chip" onclick="filterPr(this,'chairs')">🪑 Sillas</div>
       <div class="f-chip" onclick="filterPr(this,'extras')">➕ Extras</div>
     </div>
-    <div class="prod-grid" id="prodGrid"><div class="loading">Loading…</div></div>
+    <div class="prod-grid" id="prodGrid"><div class="loading">Cargando pues…</div></div>
   </div>
 
 </div>
@@ -297,7 +297,7 @@ tr:hover td{background:#fff8f0;}
 <!-- ══ Modal: Booking Detail ══ -->
 <div class="modal-overlay" id="modalBooking" onclick="if(event.target===this)closeModal('modalBooking')">
   <div class="modal">
-    <h3 id="mbkTitle">Booking Detail</h3>
+    <h3 id="mbkTitle">Detalle de reserva</h3>
     <div id="mbkBody"></div>
     <div class="modal-btns" id="mbkBtns"></div>
   </div>
@@ -306,39 +306,39 @@ tr:hover td{background:#fff8f0;}
 <!-- ══ Modal: Product ══ -->
 <div class="modal-overlay" id="modalProduct" onclick="if(event.target===this)closeModal('modalProduct')">
   <div class="modal">
-    <h3 id="mprTitle">Product</h3>
+    <h3 id="mprTitle">Producto</h3>
     <input type="hidden" id="prId">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="mfield"><label>Name *</label><input type="text" id="prName" placeholder="Big Combo Blue"></div>
-      <div class="mfield"><label>Category *</label>
+      <div class="mfield"><label>Nombre *</label><input type="text" id="prName" placeholder="Big Combo Blue"></div>
+      <div class="mfield"><label>Categoría *</label>
         <select id="prCat">
           <option value="combo">🎪 Combo</option>
-          <option value="castle">🏰 Castle</option>
+          <option value="castle">🏰 Castillo</option>
           <option value="mini">⚡ Mini</option>
-          <option value="water">💦 Water</option>
-          <option value="chairs">🪑 Chairs / Tables</option>
+          <option value="water">💦 Agua</option>
+          <option value="chairs">🪑 Sillas / Mesas</option>
           <option value="extras">➕ Extras</option>
         </select>
       </div>
-      <div class="mfield"><label>Price ($) *</label><input type="number" id="prPrice" min="0" step="0.01"></div>
+      <div class="mfield"><label>Precio ($) *</label><input type="number" id="prPrice" min="0" step="0.01"></div>
       <div class="mfield"><label>Status</label>
         <select id="prActive">
-          <option value="1">✅ Active</option>
-          <option value="0">🙈 Hidden</option>
+          <option value="1">✅ Activo</option>
+          <option value="0">🙈 Oculto</option>
         </select>
       </div>
     </div>
-    <div class="mfield"><label>Description</label><textarea id="prDesc" placeholder="Brief description…"></textarea></div>
+    <div class="mfield"><label>Descripción</label><textarea id="prDesc" placeholder="Brief description…"></textarea></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="mfield"><label>Badge text</label><input type="text" id="prBadge" placeholder="🏰 Castle"></div>
       <div class="mfield"><label>Badge color</label><input type="color" id="prBadgeColor" value="#FF6B00" style="height:42px;padding:4px"></div>
     </div>
-    <div class="mfield"><label>Tags (comma separated)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
-    <div class="mfield"><label>Image URL</label><input type="url" id="prImg" placeholder="https://…"></div>
+    <div class="mfield"><label>Etiquetas (separado por coma)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
+    <div class="mfield"><label>URL de la imagen</label><input type="url" id="prImg" placeholder="https://…"></div>
     <div class="modal-btns">
-      <button class="btn-secondary" onclick="closeModal('modalProduct')">Cancel</button>
-      <button class="action-btn btn-delete" id="prDelBtn" onclick="deleteProduct()" style="display:none">🗑 Delete</button>
-      <button class="btn-primary" onclick="saveProduct()">💾 Save</button>
+      <button class="btn-secondary" onclick="closeModal('modalProduct')">Cancelar</button>
+      <button class="action-btn btn-delete" id="prDelBtn" onclick="deleteProduct()" style="display:none">🗑 Eliminar</button>
+      <button class="btn-primary" onclick="saveProduct()">💾 Guardar</button>
     </div>
   </div>
 </div>
@@ -349,9 +349,9 @@ tr:hover td{background:#fff8f0;}
     <h3 id="mdayTitle">—</h3>
     <div id="mdayBody"></div>
     <div class="modal-btns">
-      <button class="btn-secondary" onclick="closeModal('modalDay')">Close</button>
-      <button class="action-btn btn-delete" id="mdayBlkBtn" onclick="blockFromModal()">🚫 Block</button>
-      <button class="action-btn btn-confirm" id="mdayUnblkBtn" style="display:none" onclick="unblockFromModal()">✅ Unblock</button>
+      <button class="btn-secondary" onclick="closeModal('modalDay')">Cerrar</button>
+      <button class="action-btn btn-delete" id="mdayBlkBtn" onclick="blockFromModal()">🚫 Bloquear</button>
+      <button class="action-btn btn-confirm" id="mdayUnblkBtn" style="display:none" onclick="unblockFromModal()">✅ Desbloquear</button>
     </div>
   </div>
 </div>
