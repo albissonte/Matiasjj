@@ -174,10 +174,10 @@ tr:hover td{background:#fff8f0;}
     <div style="font-size:2.5rem;margin-bottom:8px">🪂</div>
     <h1>Matias <span style="color:var(--or)">Jump Jumping</span></h1>
     <p>Admin Panel</p>
-    <div class="lfield"><label>Usuario</label><input type="text" id="loginUser" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="lfield"><label>Contraseña</label><input type="password" id="loginPass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lfield"><label>Username</label><input type="text" id="loginUser" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lfield"><label>Password</label><input type="password" id="loginPass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <div class="login-err" id="loginErr"></div>
-    <button class="btn-login" onclick="doLogin()">Entrar al Panel</button>
+    <button class="btn-login" onclick="doLogin()">Enter</button>
   </div>
 </div>
 
@@ -274,7 +274,7 @@ tr:hover td{background:#fff8f0;}
         <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 4px 16px rgba(0,0,0,.07);font-size:.8rem">
           <div style="font-family:'Fredoka One',cursive;margin-bottom:10px">Leyenda</div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#f0fff4;border:1.5px solid #aaddbb"></div>Tiene reservas</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#fff0f0;border:1.5px solid #ffaaaa"></div>Bloquedo</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#fff0f0;border:1.5px solid #ffaaaa"></div>Bloqueado</div>
           <div style="display:flex;align-items:center;gap:8px"><div style="width:14px;height:14px;border-radius:3px;background:#f0f8ff;border:1.5px solid var(--bl)"></div>Hoy</div>
         </div>
       </div>
@@ -341,7 +341,7 @@ tr:hover td{background:#fff8f0;}
       <div class="mfield"><label>Color insignia</label><input type="color" id="prBadgeColor" value="#FF6B00" style="height:42px;padding:4px"></div>
     </div>
     <div class="mfield"><label>Etiquetas (separadas por coma)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
-<div class="mfield"><label>Image URL</label><input type="url" id="prImg" placeholder="https://…"></div>
+<div class="mfield"><label>URL de imagen</label><input type="url" id="prImg" placeholder="https://…"></div>
 <div class="mfield"><label>Stock (máx. por día)</label><input type="number" id="prStock" min="1" value="1"></div>
       <div class="modal-btns">
       <button class="btn-secondary" onclick="closeModal('modalProduct')">Cancelar</button>
@@ -394,10 +394,10 @@ async function doLogin() {
       body: JSON.stringify({username:user, password:pass})
     });
     const d = await r.json();
-    if (!d.ok) { err.textContent = d.error || 'Invalid credentials'; err.classList.add('show'); return; }
+    if (!d.ok) { err.textContent = d.error || 'Credenciales incorrectas'; err.classList.add('show'); return; }
     token = d.token; localStorage.setItem('mj_token', token);
     showApp();
-  } catch { err.textContent = 'Connection error.'; err.classList.add('show'); }
+  } catch { err.textContent = 'Error de conexión.'; err.classList.add('show'); }
 }
 
 function doLogout() {
@@ -424,7 +424,8 @@ function showTab(name) {
   document.querySelectorAll('.drop-item').forEach(b => {
     if (b.textContent.toLowerCase().includes(name.slice(0,4))) b.classList.add('active');
   });
-  document.getElementById('topbar-subtitle').textContent = name.charAt(0).toUpperCase() + name.slice(1);
+  const tabNames = {dashboard:'Panel de control', bookings:'Reservas', calendar:'Calendario', products:'Productos'};
+  document.getElementById('topbar-subtitle').textContent = tabNames[name] || name;
   if (name === 'calendar') renderCalendar();
   closeSidebar();
 }
@@ -470,7 +471,7 @@ async function loadStats() {
         <div style="font-weight:800;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.customer_name)}</div>
         <div style="font-size:.72rem;color:#aaa">🎪 ${esc(b.item_name)} · ⏰ ${esc(b.event_time)}</div>
       </div>
-      <span class="badge badge-${b.status}">${b.status}</span>
+      <span class="badge badge-${b.status}">${{pending:'⏳ Pendiente',confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado'}[b.status]||b.status}</span>
     </div>`;
   }).join('');
 }
@@ -504,15 +505,35 @@ function renderBookings(list) {
   if (bkFilter) rows = rows.filter(b => b.status === bkFilter);
   const tbody = document.getElementById('bookingsTbody');
   if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">No hay reservas</td></tr>'; return; }
-  tbody.innerHTML = rows.map(b => `<tr>
-    <td><strong>${esc(b.booking_ref)}</strong></td>
-    <td><div style="font-weight:800">${esc(b.customer_name)}</div><div style="font-size:.72rem;color:#aaa">${esc(b.customer_email)}</div></td>
-    <td style="font-size:.8rem">${esc(b.item_name)}</td>
-    <td><strong>${b.event_date}</strong></td>
-    <td>${esc(b.event_time)}</td>
-    <td><span class="badge badge-${b.status}">${{pending:'⏳ Pendiente',confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado'}[b.status]||b.status}</span></td>
-    <td><button class="action-btn btn-edit" onclick="openBooking(${b.id})">Ver</button></td>
-  </tr>`).join('');
+
+  // Group rows by same customer + event_date + event_time + delivery_address + status
+  const groups = [];
+  const seen = {};
+  rows.forEach(b => {
+    const key = `${b.customer_email}|${b.event_date}|${b.event_time}|${b.delivery_address}|${b.status}`;
+    if (seen[key] !== undefined) {
+      groups[seen[key]].items.push(b);
+    } else {
+      seen[key] = groups.length;
+      groups.push({ key, main: b, items: [b] });
+    }
+  });
+
+  tbody.innerHTML = groups.map(g => {
+    const b = g.main;
+    const itemNames = g.items.map(x => esc(x.item_name)).join('<br>');
+    const refs = g.items.map(x => `<strong>${esc(x.booking_ref)}</strong>`).join('<br>');
+    const statusMap = {pending:'⏳ Pendiente',confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado'};
+    return `<tr>
+      <td>${refs}</td>
+      <td><div style="font-weight:800">${esc(b.customer_name)}</div><div style="font-size:.72rem;color:#aaa">${esc(b.customer_email)}</div></td>
+      <td style="font-size:.8rem">${itemNames}</td>
+      <td><strong>${b.event_date}</strong></td>
+      <td>${esc(b.event_time)}</td>
+      <td><span class="badge badge-${b.status}">${statusMap[b.status]||b.status}</span></td>
+      <td>${g.items.map(x => `<button class="action-btn btn-edit" onclick="openBooking(${x.id})">${esc(x.booking_ref)}</button>`).join('')}</td>
+    </tr>`;
+  }).join('');
 }
 
 function filterBk(el, status) {
@@ -540,14 +561,14 @@ async function openBooking(id) {
       <div class="detail-item"><label>Cliente</label><p>${esc(b.customer_name)}</p></div>
       <div class="detail-item"><label>Email</label><p>${esc(b.customer_email)}</p></div>
       <div class="detail-item"><label>Teléfono</label><p>${esc(b.customer_phone||'—')}</p></div>
-      <div class="detail-item"><label>Estado</label><p><span class="badge badge-${b.status}">${{pending:'Pendiente',confirmed:'Confirmado',cancelled:'Cancelado',completed:'Completado'}[b.status]||b.status}</span>${b.status}</span></p></div>
+      <div class="detail-item"><label>Estado</label><p><span class="badge badge-${b.status}">${{pending:'⏳ Pendiente',confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado'}[b.status]||b.status}</span></p></div>
       <div class="detail-item"><label>Fecha del evento</label><p><strong>${b.event_date}</strong></p></div>
       <div class="detail-item"><label>Hora</label><p>${esc(b.event_time)}</p></div>
     </div>
-    <div class="mfield"><label>Address</label><p style="font-size:.88rem;font-weight:700;padding:4px 0">${esc(b.delivery_address)}</p></div>
+    <div class="mfield"><label>Dirección</label><p style="font-size:.88rem;font-weight:700;padding:4px 0">${esc(b.delivery_address)}</p></div>
     <div style="background:#fff8f0;border-radius:10px;padding:12px;margin:10px 0"><strong style="font-family:'Fredoka One',cursive">🎪 ${esc(b.item_name)}</strong></div>
-    ${b.notes ? `<div class="mfield"><label>Customer notes</label><p style="font-size:.85rem;color:#888;padding:4px 0">${esc(b.notes)}</p></div>` : ''}
-    <div class="mfield"><label>Internal notes</label>
+    ${b.notes ? `<div class="mfield"><label>Notas del cliente</label><p style="font-size:.85rem;color:#888;padding:4px 0">${esc(b.notes)}</p></div>` : ''}
+    <div class="mfield"><label>Notas internas</label>
       <textarea id="bkNotes" style="width:100%;padding:10px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;outline:none;min-height:70px" placeholder="Solo tú ves esto…">${esc(b.internal_notes||'')}</textarea>
       <button class="action-btn btn-edit" style="margin-top:4px" onclick="saveNotes()">Guardar notas</button>
     </div>
@@ -568,7 +589,8 @@ async function changeStatus(status) {
   const b = bookings.find(x => x.id == currentBkId);
   if (b) b.status = status;
   renderBookings(); closeModal('modalBooking'); loadStats();
-  toast('Estado' + status, 'ok');
+  const statusMsg = {confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado',pending:'⏳ Pendiente'};
+  toast('Estado: ' + (statusMsg[status]||status), 'ok');
 }
 
 async function saveNotes() {
@@ -670,7 +692,7 @@ function filterPr(el, cat) {
 
 function openProductModal(id) {
   const p = id ? products.find(x => x.id == id) : null;
-  document.getElementById('mprTitle').textContent = p ? 'Edit Product' : 'New Product';
+  document.getElementById('mprTitle').textContent = p ? 'Editar producto' : 'Nuevo producto';
   document.getElementById('prId').value          = p?.id || '';
   document.getElementById('prName').value        = p?.name || '';
   document.getElementById('prCat').value         = p?.category || 'combo';
@@ -770,7 +792,7 @@ function openDayModal(ds) {
   const dt   = new Date(ds+'T12:00:00');
   const isBlk = blockedDates.includes(ds);
   const dayBk = bookings.filter(b => b.event_date===ds && ['pending','confirmed'].includes(b.status));
-  document.getElementById('mdayTitle').textContent = dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('mdayTitle').textContent = dt.toLocaleDateString('es',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   document.getElementById('mdayBlkBtn').style.display   = isBlk?'none':'';
   document.getElementById('mdayUnblkBtn').style.display = isBlk?'':'none';
   let body = isBlk?`<div style="background:#fff0f0;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:800;color:#c00;font-size:.85rem">🚫 Esta fecha está bloqueada</div>`:'';
