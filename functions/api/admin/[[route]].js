@@ -96,10 +96,11 @@ export async function onRequest(context) {
 
     // PRODUCTS
     if (resource === "products") {
-      if (!subId && method === "GET")    return getProducts(env.DB);
-      if (!subId && method === "POST")   return createProduct(env.DB, request);
-      if (subId  && method === "PUT")    return updateProduct(env.DB, subId, request);
-      if (subId  && method === "DELETE") return deleteProduct(env.DB, subId);
+      if (!subId && method === "GET")                    return getProducts(env.DB);
+      if (!subId && method === "POST")                   return createProduct(env.DB, request);
+      if (subId === "reorder" && method === "POST")     return reorderProducts(env.DB, request);
+      if (subId  && method === "PUT")                    return updateProduct(env.DB, subId, request);
+      if (subId  && method === "DELETE")                 return deleteProduct(env.DB, subId);
     }
 
     // BLOCKED DATES
@@ -300,8 +301,8 @@ async function createProduct(db, request) {
   const tags = normalizeTags(b.tags);
 
   const result = await db.prepare(`
-    INSERT INTO products (name, category, description, price, badge_text, badge_color, tags, image_url, active, sort_order, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO products (name, category, description, price, badge_text, badge_color, tags, image_url, active, sort_order, stock, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
     b.name.trim(),
     b.category   || "extras",
@@ -313,6 +314,7 @@ async function createProduct(db, request) {
     b.image_url   || "",
     b.active !== undefined ? parseInt(b.active) : 1,
     parseInt(b.sort_order) || 0,
+    parseInt(b.stock) || 1,
     now, now
   ).run();
 
@@ -329,7 +331,7 @@ async function updateProduct(db, id, request) {
   await db.prepare(`
     UPDATE products SET
       name=?, category=?, description=?, price=?, badge_text=?,
-      badge_color=?, tags=?, image_url=?, active=?, sort_order=?, updated_at=?
+      badge_color=?, tags=?, image_url=?, active=?, sort_order=?, stock=?, updated_at=?
     WHERE id=?
   `).bind(
     b.name.trim(),
@@ -342,10 +344,22 @@ async function updateProduct(db, id, request) {
     b.image_url   || "",
     b.active !== undefined ? parseInt(b.active) : 1,
     parseInt(b.sort_order) || 0,
+    parseInt(b.stock) || 1,
     now,
     id
   ).run();
 
+  return json({ ok: true });
+}
+
+
+async function reorderProducts(db, request) {
+  const b = await parseBody(request);
+  if (!Array.isArray(b.order)) return err('order must be an array');
+  const stmts = b.order.map(item =>
+    db.prepare('UPDATE products SET sort_order=? WHERE id=?').bind(item.sort_order, item.id)
+  );
+  await db.batch(stmts);
   return json({ ok: true });
 }
 
@@ -400,3 +414,4 @@ function normalizeTags(tags) {
   }
   return "[]";
 }
+
