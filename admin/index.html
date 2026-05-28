@@ -97,7 +97,10 @@ tr:hover td{background:#fff8f0;}
 
 /* ── PRODUCT GRID ── */
 .prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
-.prod-card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.07);transition:.2s;}
+.prod-card{position:relative;background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.07);transition:.2s;overflow:hidden;}
+.prod-card::before{content:'';position:absolute;inset:0;background-image:var(--card-img);background-size:cover;background-position:center;opacity:.13;border-radius:16px;z-index:0;transition:.2s;}
+.prod-card:hover::before{opacity:.22;}
+.prod-card>*{position:relative;z-index:1;}
 .prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(255,107,0,.1);}
 .prod-card.inactive{opacity:.5;}
 .prod-name{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--dk);margin-bottom:4px;}
@@ -220,8 +223,7 @@ tr:hover td{background:#fff8f0;}
       <div class="stat-card"><div class="stat-num" id="stProducts" style="color:var(--bl)">—</div><div class="stat-lbl">Productos</div></div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
-      <div>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">      <div>
         <div class="sec-title" style="margin-bottom:12px">📅 Próximos 7 días</div>
         <div id="upcomingList" class="loading">Cargando choquito…</div>
       </div>
@@ -626,7 +628,7 @@ function renderProducts() {
   if (!list.length) { grid.innerHTML = '<div class="empty">No hay productos</div>'; return; }
   const icons = {combo:'🎪',castle:'🏰',mini:'⚡',water:'💦',dry:'🌬️',chairs:'🪑',extras:'➕'};
   grid.innerHTML = list.map(p => `
-    <div class="prod-card ${p.active?'':'inactive'}" draggable="true" data-id="${p.id}">
+<div class="prod-card ${p.active?'':'inactive'}" draggable="true" data-id="${p.id}" ${p.image_url?`style="--card-img:url('${p.image_url}')"`:'style="--card-img:none"'}>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <span style="font-size:1.1rem;cursor:grab;color:#ccc" title="Arrastra para reordenar">⠿</span>
         <span style="font-size:1.4rem">${icons[p.category]||'📦'}</span>
