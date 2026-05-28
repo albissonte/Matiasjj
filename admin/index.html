@@ -342,7 +342,6 @@ tr:hover td{background:#fff8f0;}
     </div>
     <div class="mfield"><label>Etiquetas (separadas por coma)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
 <div class="mfield"><label>Image URL</label><input type="url" id="prImg" placeholder="https://…"></div>
-<div class="mfield"><label>Sort Order (menor = primero)</label><input type="number" id="prSort" min="0" value="0"></div>
 <div class="mfield"><label>Stock (máx. por día)</label><input type="number" id="prStock" min="1" value="1"></div>    
       <div class="modal-btns">
       <button class="btn-secondary" onclick="closeModal('modalProduct')">Cancelar</button>
@@ -682,7 +681,6 @@ function openProductModal(id) {
   document.getElementById('prBadgeColor').value  = p?.badge_color || '#FF6B00';
   document.getElementById('prTags').value        = parseTags(p?.tags).join(', ');
 document.getElementById('prImg').value  = p?.image_url || '';
-document.getElementById('prSort').value = p?.sort_order ?? 0;
 document.getElementById('prStock').value = p?.stock ?? 1;
 document.getElementById('prDelBtn').style.display = p ? '' : 'none';
   openModal('modalProduct');
@@ -702,7 +700,6 @@ async function saveProduct() {
     badge_text: document.getElementById('prBadge').value,
     badge_color: document.getElementById('prBadgeColor').value,
 tags, image_url: document.getElementById('prImg').value,
-sort_order: parseInt(document.getElementById('prSort').value) || 0,
     stock: parseInt(document.getElementById('prStock').value) || 1,
   };
   const d = id ? await apiFetch('PUT',`/products/${id}`,body) : await apiFetch('POST','/products',body);
