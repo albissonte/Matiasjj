@@ -334,8 +334,9 @@ tr:hover td{background:#fff8f0;}
       <div class="mfield"><label>Color insignia</label><input type="color" id="prBadgeColor" value="#FF6B00" style="height:42px;padding:4px"></div>
     </div>
     <div class="mfield"><label>Etiquetas (separadas por coma)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
-    <div class="mfield"><label>URL de la imagen</label><input type="url" id="prImg" placeholder="https://…"></div>
-    <div class="modal-btns">
+<div class="mfield"><label>Image URL</label><input type="url" id="prImg" placeholder="https://…"></div>
+<div class="mfield"><label>Sort Order (menor = primero)</label><input type="number" id="prSort" min="0" value="0"></div>    
+      <div class="modal-btns">
       <button class="btn-secondary" onclick="closeModal('modalProduct')">Cancelar</button>
       <button class="action-btn btn-delete" id="prDelBtn" onclick="deleteProduct()" style="display:none">🗑 Eliminar</button>
       <button class="btn-primary" onclick="saveProduct()">💾 Guardar</button>
@@ -627,8 +628,9 @@ function openProductModal(id) {
   document.getElementById('prBadge').value       = p?.badge_text || '';
   document.getElementById('prBadgeColor').value  = p?.badge_color || '#FF6B00';
   document.getElementById('prTags').value        = parseTags(p?.tags).join(', ');
-  document.getElementById('prImg').value         = p?.image_url || '';
-  document.getElementById('prDelBtn').style.display = p ? '' : 'none';
+document.getElementById('prImg').value  = p?.image_url || '';
+document.getElementById('prSort').value = p?.sort_order ?? 0;
+document.getElementById('prDelBtn').style.display = p ? '' : 'none';
   openModal('modalProduct');
 }
 
@@ -645,8 +647,8 @@ async function saveProduct() {
     description: document.getElementById('prDesc').value,
     badge_text: document.getElementById('prBadge').value,
     badge_color: document.getElementById('prBadgeColor').value,
-    tags, image_url: document.getElementById('prImg').value,
-  };
+tags, image_url: document.getElementById('prImg').value,
+sort_order: parseInt(document.getElementById('prSort').value) || 0,  };
   const d = id ? await apiFetch('PUT',`/products/${id}`,body) : await apiFetch('POST','/products',body);
   if (!d?.ok) { toast(d?.error||'Error', 'err'); return; }
   toast(id?'Actualizado ✓':'Creado ✓', 'ok');
