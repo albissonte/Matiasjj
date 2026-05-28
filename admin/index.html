@@ -540,7 +540,7 @@ async function openBooking(id) {
       <div class="detail-item"><label>Cliente</label><p>${esc(b.customer_name)}</p></div>
       <div class="detail-item"><label>Email</label><p>${esc(b.customer_email)}</p></div>
       <div class="detail-item"><label>Teléfono</label><p>${esc(b.customer_phone||'—')}</p></div>
-      <div class="detail-item"><label>Estado</label><p><span class="badge badge-${b.status}">${{pending:'⏳ Pendiente',confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado'}[b.status]||b.status}</span>${b.status}</span></p></div>
+      <div class="detail-item"><label>Estado</label><p><span class="badge badge-${b.status}">${{pending:'Pendiente',confirmed:'Confirmado',cancelled:'Cancelado',completed:'Completado'}[b.status]||b.status}</span>${b.status}</span></p></div>
       <div class="detail-item"><label>Fecha del evento</label><p><strong>${b.event_date}</strong></p></div>
       <div class="detail-item"><label>Hora</label><p>${esc(b.event_time)}</p></div>
     </div>
