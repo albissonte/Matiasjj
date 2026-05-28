@@ -293,6 +293,7 @@ tr:hover td{background:#fff8f0;}
       <div class="f-chip" onclick="filterPr(this,'castle')">🏰 Castillo</div>
       <div class="f-chip" onclick="filterPr(this,'mini')">⚡ Mini</div>
       <div class="f-chip" onclick="filterPr(this,'water')">💦 Agua</div>
+      <div class="f-chip" onclick="filterPr(this,'dry')">🌬️ Seco</div>
       <div class="f-chip" onclick="filterPr(this,'chairs')">🪑 Sillas</div>
       <div class="f-chip" onclick="filterPr(this,'extras')">➕ Extras</div>
     </div>
@@ -323,6 +324,7 @@ tr:hover td{background:#fff8f0;}
           <option value="castle">🏰 Castillo</option>
           <option value="mini">⚡ Mini</option>
           <option value="water">💦 Agua</option>
+          <option value="dry">🌬️ Seco</option> 
           <option value="chairs">🪑 Sillas / Mesas</option>
           <option value="extras">➕ Extras</option>
         </select>
@@ -622,7 +624,7 @@ function renderProducts() {
   const grid = document.getElementById('prodGrid');
   let list = prFilter ? products.filter(p => p.category === prFilter) : products;
   if (!list.length) { grid.innerHTML = '<div class="empty">No hay productos</div>'; return; }
-  const icons = {combo:'🎪',castle:'🏰',mini:'⚡',water:'💦',chairs:'🪑',extras:'➕'};
+  const icons = {combo:'🎪',castle:'🏰',mini:'⚡',water:'💦',dry:'🌬️',chairs:'🪑',extras:'➕'};
   grid.innerHTML = list.map(p => `
     <div class="prod-card ${p.active?'':'inactive'}" draggable="true" data-id="${p.id}">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
