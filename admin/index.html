@@ -155,6 +155,13 @@ tr:hover td{background:#fff8f0;}
   .tab-btn{padding:10px 12px;font-size:.78rem;}
   .detail-row{grid-template-columns:1fr;}
 }
+
+/* ── DRAG & DROP ── */
+.prod-card{cursor:grab;}
+.prod-card.dragging{opacity:.4;transform:scale(.97);cursor:grabbing;}
+.prod-card.drag-over{border:2.5px dashed var(--or);background:#fff8f0;}
+.drag-handle{font-size:1.2rem;cursor:grab;margin-right:6px;color:#ccc;}
+
 .empty{text-align:center;padding:40px;color:#aaa;font-size:.9rem;font-weight:700;}
 .loading{text-align:center;padding:40px;color:#aaa;font-weight:700;}
 </style>
@@ -335,7 +342,8 @@ tr:hover td{background:#fff8f0;}
     </div>
     <div class="mfield"><label>Etiquetas (separadas por coma)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
 <div class="mfield"><label>Image URL</label><input type="url" id="prImg" placeholder="https://…"></div>
-<div class="mfield"><label>Sort Order (menor = primero)</label><input type="number" id="prSort" min="0" value="0"></div>    
+<div class="mfield"><label>Sort Order (menor = primero)</label><input type="number" id="prSort" min="0" value="0"></div>
+<div class="mfield"><label>Stock (máx. por día)</label><input type="number" id="prStock" min="1" value="1"></div>    
       <div class="modal-btns">
       <button class="btn-secondary" onclick="closeModal('modalProduct')">Cancelar</button>
       <button class="action-btn btn-delete" id="prDelBtn" onclick="deleteProduct()" style="display:none">🗑 Eliminar</button>
@@ -574,7 +582,7 @@ async function saveNotes() {
 
 async function deleteBk() {
   if (!confirm('¿Eliminar esta reserva?')) return;
-  await apiFetch('ELIMINAR', `/bookings/${currentBkId}`);
+  await apiFetch('DELETE', `/bookings/${currentBkId}`);
   bookings = bookings.filter(x => x.id != currentBkId);
   renderBookings(); closeModal('modalBooking'); loadStats();
   toast('Eliminado', 'ok');
@@ -595,20 +603,65 @@ function renderProducts() {
   if (!list.length) { grid.innerHTML = '<div class="empty">No hay productos</div>'; return; }
   const icons = {combo:'🎪',castle:'🏰',mini:'⚡',water:'💦',chairs:'🪑',extras:'➕'};
   grid.innerHTML = list.map(p => `
-    <div class="prod-card ${p.active?'':'inactive'}">
+    <div class="prod-card ${p.active?'':'inactive'}" draggable="true" data-id="${p.id}">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:1.1rem;cursor:grab;color:#ccc" title="Arrastra para reordenar">⠿</span>
         <span style="font-size:1.4rem">${icons[p.category]||'📦'}</span>
-        <span style="font-size:.7rem;font-weight:800;color:${p.active?'var(--gr)':'#aaa'}">${p.active?'ACTIVE':'HIDDEN'}</span>
+        <span style="font-size:.7rem;font-weight:800;color:${p.active?'var(--gr)':'#aaa'}">${p.active?'ACTIVO':'OCULTO'}</span>
       </div>
       <div class="prod-name">${esc(p.name)}</div>
       <div class="prod-cat">${esc(p.category)}</div>
       <div class="prod-price">$${parseFloat(p.price).toFixed(2)}</div>
       ${p.description?`<div style="font-size:.78rem;color:#888;margin-bottom:10px;line-height:1.5">${esc(p.description)}</div>`:''}
       <div class="prod-actions">
+        <span style="font-size:.7rem;font-weight:800;color:#888">📦 ${p.stock??1}/día</span>
         <button class="action-btn btn-edit" onclick="openProductModal(${p.id})">✏️ Editar</button>
         <button class="action-btn ${p.active?'btn-cancel':'btn-confirm'}" onclick="toggleActive(${p.id},${p.active?0:1})">${p.active?'🙈 Ocultar':'👁 Mostrar'}</button>
       </div>
     </div>`).join('');
+  initDrag();
+}
+
+function initDrag() {
+  const grid = document.getElementById('prodGrid');
+  let dragSrc = null;
+  grid.querySelectorAll('.prod-card[draggable]').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      dragSrc = card;
+      setTimeout(() => card.classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      grid.querySelectorAll('.prod-card').forEach(c => c.classList.remove('drag-over'));
+    });
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (card !== dragSrc) card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+    card.addEventListener('drop', async e => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      if (!dragSrc || dragSrc === card) return;
+      const allCards = [...grid.querySelectorAll('.prod-card[draggable]')];
+      const fromIdx = allCards.indexOf(dragSrc);
+      const toIdx   = allCards.indexOf(card);
+      if (fromIdx < toIdx) card.after(dragSrc);
+      else card.before(dragSrc);
+      await saveOrder();
+    });
+  });
+}
+
+async function saveOrder() {
+  const cards = [...document.querySelectorAll('#prodGrid .prod-card[draggable]')];
+  const order = cards.map((c, i) => ({ id: parseInt(c.dataset.id), sort_order: i }));
+  const d = await apiFetch('POST', '/products/reorder', { order });
+  if (d?.ok) {
+    order.forEach(u => { const p = products.find(x => x.id === u.id); if (p) p.sort_order = u.sort_order; });
+    toast('Orden guardado ✓', 'ok');
+  }
 }
 
 function filterPr(el, cat) {
@@ -630,6 +683,7 @@ function openProductModal(id) {
   document.getElementById('prTags').value        = parseTags(p?.tags).join(', ');
 document.getElementById('prImg').value  = p?.image_url || '';
 document.getElementById('prSort').value = p?.sort_order ?? 0;
+document.getElementById('prStock').value = p?.stock ?? 1;
 document.getElementById('prDelBtn').style.display = p ? '' : 'none';
   openModal('modalProduct');
 }
@@ -648,7 +702,9 @@ async function saveProduct() {
     badge_text: document.getElementById('prBadge').value,
     badge_color: document.getElementById('prBadgeColor').value,
 tags, image_url: document.getElementById('prImg').value,
-sort_order: parseInt(document.getElementById('prSort').value) || 0,  };
+sort_order: parseInt(document.getElementById('prSort').value) || 0,
+    stock: parseInt(document.getElementById('prStock').value) || 1,
+  };
   const d = id ? await apiFetch('PUT',`/products/${id}`,body) : await apiFetch('POST','/products',body);
   if (!d?.ok) { toast(d?.error||'Error', 'err'); return; }
   toast(id?'Actualizado ✓':'Creado ✓', 'ok');
@@ -658,7 +714,7 @@ sort_order: parseInt(document.getElementById('prSort').value) || 0,  };
 async function deleteProduct() {
   const id = document.getElementById('prId').value;
   if (!id || !confirm('¿Eliminar este producto?')) return;
-  await apiFetch('ELIMINAR', `/products/${id}`);
+  await apiFetch('DELETE', `/products/${id}`);
   toast('Eliminado', 'ok'); closeModal('modalProduct'); loadProducts();
 }
 
@@ -752,7 +808,7 @@ async function blockFromModal() {
 
 async function unblockFromModal() {
   if (!currentDay) return;
-  await apiFetch('ELIMINAR',`/blocked-dates/${currentDay}`);
+  await apiFetch('DELETE',`/blocked-dates/${currentDay}`);
   blockedDates = blockedDates.filter(d=>d!==currentDay);
   renderCalendar(); closeModal('modalDay'); toast('Fecha desbloqueada','ok');
 }
