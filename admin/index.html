@@ -628,7 +628,7 @@ function renderProducts() {
   if (!list.length) { grid.innerHTML = '<div class="empty">No hay productos</div>'; return; }
   const icons = {combo:'🎪',castle:'🏰',mini:'⚡',water:'💦',dry:'🌬️',chairs:'🪑',extras:'➕'};
   grid.innerHTML = list.map(p => `
-<div class="prod-card ${p.active?'':'inactive'}" draggable="true" data-id="${p.id}" ${p.image_url?`style="--card-img:url('${p.image_url ? `style="--card-img:url('${p.image_url}?v=${Date.now()}')"` : 'style="--card-img:none"'}>
+<div class="prod-card ${p.active?'':'inactive'}" draggable="true" data-id="${p.id}" ${p.image_url?`style="--card-img:url('${p.image_url}?v=${Date.now()}')"`:' style="--card-img:none"'}>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <span style="font-size:1.1rem;cursor:grab;color:#ccc" title="Arrastra para reordenar">⠿</span>
         <span style="font-size:1.4rem">${icons[p.category]||'📦'}</span>
