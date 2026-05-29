@@ -408,6 +408,7 @@ function doLogout() {
   token = ''; localStorage.removeItem('mj_token');
   document.getElementById('adminApp').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
+  window.location.href = '/';
 }
 
 function showApp() {
