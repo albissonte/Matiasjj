@@ -23,8 +23,6 @@ nav{background:#fff;position:sticky;top:0;z-index:200;box-shadow:0 2px 18px rgba
 .nlinks a{padding:6px 11px;border-radius:50px;font-weight:800;font-size:.74rem;color:#444;text-decoration:none;transition:.2s;}
 .nlinks a:hover{background:var(--or);color:#fff;}
 .nbtns{display:flex;gap:8px;align-items:center;}
-.nwa{background:var(--gr);color:#fff;padding:9px 16px;border-radius:50px;font-weight:900;font-size:.82rem;text-decoration:none;display:flex;align-items:center;gap:5px;transition:.2s;}
-.nwa:hover{transform:scale(1.04);}
 .cart-nav-btn{position:relative;background:var(--or);color:#fff;border:none;padding:9px 16px;border-radius:50px;font-weight:900;font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s;font-family:'Nunito',sans-serif;}
 .cart-nav-btn:hover{transform:scale(1.04);}
 .cart-count{position:absolute;top:-6px;right:-6px;background:var(--pk);color:#fff;width:20px;height:20px;border-radius:50%;font-size:.65rem;font-weight:900;display:none;align-items:center;justify-content:center;}
@@ -92,8 +90,6 @@ section{padding:65px 4vw;}
 .ptag{background:#f1f4ff;color:#555;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:50px;}
 .pfoot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;}
 .pprice{font-family:'Fredoka One',cursive;font-size:1.45rem;color:var(--or);}
-.bres{padding:7px 14px;background:#25D366;color:#fff;border-radius:50px;font-weight:900;font-size:.76rem;text-decoration:none;transition:.2s;}
-.bres:hover{transform:scale(1.05);}
 .badd{padding:7px 16px;background:var(--or);color:#fff;border-radius:50px;font-weight:900;font-size:.76rem;border:none;cursor:pointer;transition:.2s;font-family:'Nunito',sans-serif;}
 .badd:hover{transform:scale(1.05);background:#e05e00;}
 .pcard.in-cart .badd{background:var(--gr);}
@@ -226,7 +222,11 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
 </head>
 <body>
 
-<a href="https://wa.me/15718398914" class="wafl" target="_blank">💬</a>
+<a href="https://wa.me/15718398914" class="wafl" target="_blank">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="28" height="28" fill="#fff">
+    <path d="M16 .5C7.44.5.5 7.44.5 16c0 2.83.74 5.48 2.04 7.78L.5 31.5l7.94-2.08A15.45 15.45 0 0016 31.5C24.56 31.5 31.5 24.56 31.5 16S24.56.5 16 .5zm0 28.3a12.74 12.74 0 01-6.5-1.78l-.46-.28-4.72 1.24 1.26-4.6-.3-.48A12.8 12.8 0 1116 28.8zm7.02-9.56c-.38-.19-2.26-1.12-2.61-1.24-.35-.13-.6-.19-.86.19-.25.38-.98 1.24-1.2 1.5-.22.25-.44.28-.82.09-.38-.19-1.6-.59-3.05-1.88-1.13-1-1.89-2.24-2.11-2.62-.22-.38-.02-.58.17-.77.17-.17.38-.44.57-.66.19-.22.25-.38.38-.63.13-.25.06-.47-.03-.66-.1-.19-.86-2.07-1.18-2.83-.31-.74-.63-.64-.86-.65h-.73c-.25 0-.66.09-1.01.47-.35.38-1.32 1.29-1.32 3.14s1.35 3.64 1.54 3.9c.19.25 2.66 4.06 6.44 5.69.9.39 1.6.62 2.15.79.9.29 1.73.25 2.38.15.73-.11 2.26-.92 2.58-1.81.32-.89.32-1.65.22-1.81-.09-.16-.35-.25-.73-.44z"/>
+  </svg>
+</a>
 
 <!-- FLOATING CART -->
 <div class="cart-float" id="cartFloat">
@@ -302,7 +302,6 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
     <button class="cart-nav-btn" onclick="toggleCart()">
       🛒 Cart <span class="cart-count" id="cartCount">0</span>
     </button>
-    <a href="https://wa.me/15718398914" class="nwa" target="_blank">💬 WhatsApp</a>
   </div>
 </nav>
 
@@ -349,8 +348,7 @@ footer{background:var(--dk);color:#fff;padding:32px 4vw;display:flex;align-items
     <h1>The most<br><span class="a1">fun party</span><br>starts <span class="a2">here!</span></h1>
     <p class="hsub">Bounce houses, water slides, tables, chairs and tents for birthdays, school events, 15 years birthdays and more. Delivery, setup and pickup always included.</p>
     <div class="hbtns">
-      <button class="bmain" onclick="toggleCart()">🛒 My Cart</button>
-      <a href="#catalog" class="balt">🏰 View Catalog</a>
+      <a href="#catalog" class="bmain">🏰 View Catalog</a>
     </div>
     <div class="hstats">
       <div class="stat"><div class="snum">100+</div><div class="slbl">Events</div></div>
@@ -741,14 +739,25 @@ function addToCart(btn) {
   const card = btn.closest('.pcard');
   const name = card.dataset.name;
   const price = parseFloat(card.dataset.price);
+  const stock = parseInt(card.dataset.stock) || 1;
   const existing = cart.find(i => i.name === name);
   if(existing) {
+    if(existing.qty >= stock) return;
     existing.qty++;
   } else {
     cart.push({ name, price, qty: 1 });
     card.classList.add('in-cart');
-    btn.textContent = '✅ Added';
+    btn.style.background = 'var(--gr)';
+    if(!card.querySelector('.in-cart-badge')) {
+      const badge = document.createElement('span');
+      badge.className = 'in-cart-badge';
+      badge.textContent = '✅ In Cart';
+      card.insertBefore(badge, card.querySelector('.pimg'));
+    }
   }
+  // Ocultar botón solo si se alcanzó el stock
+  const currentQty = cart.find(i => i.name === name)?.qty || 1;
+  if(currentQty >= stock) btn.style.display = 'none';
   updateCart();
   document.getElementById('cartFloat').classList.add('visible');
   if(cart.length === 1 && sessionStorage.getItem('infoReady') !== '1') {
@@ -762,7 +771,9 @@ function removeFromCart(name) {
     if(c.dataset.name === name) {
       c.classList.remove('in-cart');
       const btn = c.querySelector('.badd');
-      if(btn) btn.textContent = '🛒 Add';
+      if(btn) { btn.style.display = ''; btn.style.background = ''; }
+      const badge = c.querySelector('.in-cart-badge');
+      if(badge) badge.remove();
     }
   });
   updateCart();
@@ -947,11 +958,11 @@ function renderCatalog(products) {
   grid.innerHTML = list.map(p => {
     const tags = Array.isArray(p.tags) ? p.tags : [];
     const tagsHtml = tags.map(t => `<span class="ptag">${t}</span>`).join('');
-    const waText = encodeURIComponent(`Hi! Interested in ${p.name} $${p.price}`);
+    const inCart = cart.some(i => i.name === p.name);
     return `
-      <div class="pcard" data-cat="${p.category}" data-name="${p.name}" data-price="${p.price}">
+      <div class="pcard${inCart ? ' in-cart' : ''}" data-cat="${p.category}" data-name="${p.name}" data-price="${p.price}" data-stock="${p.stock||1}">
         <span class="pbadge" style="background:${p.badge_color||'#FF6B00'}">${p.badge_text||p.category}</span>
-        <span class="in-cart-badge">✅ In Cart</span>
+        ${inCart ? `<span class="in-cart-badge">✅ In Cart</span>` : ''}
         <div class="pimg">
           <img src="${p.image_url||''}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
         </div>
@@ -961,10 +972,7 @@ function renderCatalog(products) {
           <div class="ptags">${tagsHtml}</div>
           <div class="pfoot">
             <div class="pprice">$${parseFloat(p.price).toFixed(0)}</div>
-            <div style="display:flex;gap:6px;">
-              <button class="badd" onclick="addToCart(this)">🛒 Add</button>
-              <a href="https://wa.me/15718398914?text=${waText}" class="bres" target="_blank">💬 WA</a>
-            </div>
+            <button class="badd" onclick="addToCart(this)"${inCart && (cart.find(i=>i.name===p.name)?.qty||0) >= (p.stock||1) ? ' style="display:none"' : ''}>🛒 Add</button>
           </div>
         </div>
       </div>`;
