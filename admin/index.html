@@ -345,7 +345,25 @@ tr:hover td{background:#fff8f0;}
       <div class="mfield"><label>Color insignia</label><input type="color" id="prBadgeColor" value="#FF6B00" style="height:42px;padding:4px"></div>
     </div>
     <div class="mfield"><label>Etiquetas (separadas por coma)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
-<div class="mfield"><label>URL de imagen</label><input type="url" id="prImg" placeholder="https://…"></div>
+<div class="mfield">
+  <label>Imagen del producto</label>
+  <input type="file" id="prImgFile" accept="image/jpeg,image/jpg,image/png" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <button type="button" onclick="document.getElementById('prImgFile').click()"
+      style="padding:9px 18px;background:linear-gradient(135deg,var(--bl),#0077cc);color:#fff;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;cursor:pointer;white-space:nowrap">
+      📷 Subir imagen
+    </button>
+    <span id="prImgStatus" style="font-size:.78rem;font-weight:700;color:#aaa"></span>
+  </div>
+  <div id="prImgPreviewWrap" style="margin-top:10px;display:none">
+    <img id="prImgPreview" style="max-width:100%;max-height:160px;border-radius:10px;object-fit:cover;border:2px solid #eee">
+    <button type="button" onclick="clearImage()"
+      style="display:block;margin-top:6px;padding:4px 12px;background:#ffebee;color:#c00;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;cursor:pointer">
+      🗑 Quitar imagen
+    </button>
+  </div>
+  <input type="hidden" id="prImg">
+</div>
 <div class="mfield"><label>Stock (máx. por día)</label><input type="number" id="prStock" min="1" value="1"></div>
       <div class="modal-btns">
       <button class="btn-secondary" onclick="closeModal('modalProduct')">Cancelar</button>
@@ -707,9 +725,22 @@ function openProductModal(id) {
   document.getElementById('prBadge').value       = p?.badge_text || '';
   document.getElementById('prBadgeColor').value  = p?.badge_color || '#FF6B00';
   document.getElementById('prTags').value        = parseTags(p?.tags).join(', ');
-document.getElementById('prImg').value  = p?.image_url || '';
+document.getElementById('prImg').value   = p?.image_url || '';
 document.getElementById('prStock').value = p?.stock ?? 1;
 document.getElementById('prDelBtn').style.display = p ? '' : 'none';
+// Preview imagen existente
+const wrap = document.getElementById('prImgPreviewWrap');
+const prev = document.getElementById('prImgPreview');
+const stat = document.getElementById('prImgStatus');
+document.getElementById('prImgFile').value = '';
+if (p?.image_url) {
+  prev.src = p.image_url;
+  wrap.style.display = 'block';
+  stat.textContent = '✅ Imagen cargada';
+} else {
+  wrap.style.display = 'none';
+  stat.textContent = '';
+}
   openModal('modalProduct');
 }
 
@@ -859,8 +890,62 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-let _tt;
-function toast(msg, type='ok') {
+// ── Image Upload ──────────────────────────────────────────────
+document.getElementById('prImgFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const allowed = ['image/jpeg','image/jpg','image/png'];
+  if (!allowed.includes(file.type)) {
+    toast('Solo se permiten JPG, JPEG y PNG', 'err'); return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    toast('La imagen no puede superar 5MB', 'err'); return;
+  }
+
+  // Preview inmediato
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('prImgPreview').src = ev.target.result;
+    document.getElementById('prImgPreviewWrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+
+  const stat = document.getElementById('prImgStatus');
+  stat.textContent = '⏳ Subiendo…';
+  stat.style.color = '#e65c00';
+
+  try {
+    const fd = new FormData();
+    fd.append('image', file);
+    const res = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: fd
+    });
+    const data = await res.json();
+    if (data.url) {
+      document.getElementById('prImg').value = data.url;
+      stat.textContent = '✅ Lista para guardar';
+      stat.style.color = 'var(--gr)';
+    } else {
+      stat.textContent = '❌ ' + (data.error || 'Error al subir');
+      stat.style.color = '#ef4444';
+    }
+  } catch {
+    document.getElementById('prImgStatus').textContent = '❌ Error de conexión';
+    document.getElementById('prImgStatus').style.color = '#ef4444';
+  }
+});
+
+function clearImage() {
+  document.getElementById('prImg').value = '';
+  document.getElementById('prImgFile').value = '';
+  document.getElementById('prImgPreviewWrap').style.display = 'none';
+  document.getElementById('prImgStatus').textContent = '';
+}
+
+
   const t = document.getElementById('toast');
   t.textContent=msg; t.className=`toast ${type} show`;
   clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),3000);
