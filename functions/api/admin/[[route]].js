@@ -156,9 +156,11 @@ async function handleLogin(env, request) {
   try { body = await request.json(); } catch { return err("Invalid JSON"); }
 
   const { username, password } = body;
-  if (!username || !password)           return err("Username and password required");
-  if (username !== env.ADMIN_USER)      return err("Invalid credentials", 401);
-  if (password !== env.ADMIN_PASSWORD)  return err("Invalid credentials", 401);
+  if (!username || !password) return err("Username and password required");
+  
+  // DEBUG TEMPORAL
+  if (username !== env.ADMIN_USER) return err(`User mismatch: got '${username}' expected '${env.ADMIN_USER}'`, 401);
+  if (password !== env.ADMIN_PASSWORD) return err(`Pass mismatch: got '${password}' expected '${env.ADMIN_PASSWORD}'`, 401);
 
   const token = await makeToken(env.SESSION_SECRET, username);
   return json({ ok: true, token });
