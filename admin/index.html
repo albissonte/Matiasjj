@@ -945,7 +945,8 @@ function clearImage() {
   document.getElementById('prImgStatus').textContent = '';
 }
 
-
+let _tt;
+function toast(msg, type='ok') {
   const t = document.getElementById('toast');
   t.textContent=msg; t.className=`toast ${type} show`;
   clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),3000);
