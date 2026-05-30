@@ -1,1 +1,955 @@
-jaja
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Matias Jump Jumping</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--or:#FF6B00;--pk:#FF1493;--gr:#00C94A;--bl:#00AAFF;--dk:#141414;--bg:#f7f8ff;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dk);}
+
+/* ── LOGIN ── */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff8f0,#fff0fa,#f0f8ff);}
+.login-box{background:#fff;border-radius:24px;padding:40px 32px;box-shadow:0 20px 60px rgba(255,107,0,.15);width:100%;max-width:380px;text-align:center;}
+.login-box h1{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--dk);margin-bottom:4px;}
+.login-box p{color:#888;font-size:.85rem;margin-bottom:28px;}
+.lfield{display:flex;flex-direction:column;gap:5px;text-align:left;margin-bottom:14px;}
+.lfield label{font-size:.72rem;font-weight:800;color:var(--or);text-transform:uppercase;letter-spacing:1px;}
+.lfield input{padding:11px 14px;border:2px solid #eee;border-radius:12px;font-family:'Nunito',sans-serif;font-size:.9rem;font-weight:700;transition:.2s;}
+.lfield input:focus{outline:none;border-color:var(--or);}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--or),#ff9100);color:#fff;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;cursor:pointer;margin-top:8px;transition:.2s;}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,0,.4);}
+.login-err{color:#ff4757;font-size:.8rem;font-weight:700;margin-top:10px;display:none;}
+.login-err.show{display:block;}
+
+/* ── APP ── */
+#adminApp{display:none;min-height:100vh;}
+
+/* ── TOP BAR ── */
+.top-bar{background:#fff;border-bottom:3px solid var(--or);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.top-bar-logo{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--dk);}
+.top-bar-logo span{color:var(--or);}
+.top-bar-right{display:flex;align-items:center;gap:10px;}
+.hamburger{display:none;background:none;border:none;font-size:1.6rem;cursor:pointer;padding:2px 6px;}
+/* ── DROPDOWN MENU ── */
+.drop-menu{display:none;position:fixed;top:60px;left:0;right:0;background:#fff;border-bottom:3px solid var(--or);z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.15);}
+.drop-menu.open{display:block;}
+.drop-item{display:flex;align-items:center;gap:12px;padding:16px 20px;font-weight:800;font-size:1rem;cursor:pointer;border-bottom:1px solid #f0f0f0;transition:.15s;}
+.drop-item:hover,.drop-item.active{background:#fff8f0;color:var(--or);}
+.drop-item:last-child{border-bottom:none;}
+.btn-logout{padding:7px 16px;background:#f0f0f0;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;transition:.2s;}
+.btn-logout:hover{background:#ffdddd;color:#c00;}
+
+/* ── TABS ── */
+.tabs-bar{background:#fff;padding:0 20px;border-bottom:2px solid #f0f0f0;display:flex;gap:4px;overflow-x:auto;}
+.tab-btn{padding:12px 18px;border:none;background:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;color:#888;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.2s;white-space:nowrap;}
+.tab-btn.active{color:var(--or);border-bottom-color:var(--or);}
+.tab-content{display:none;padding:20px;}
+.tab-content.active{display:block;}
+
+/* ── SECTION HEADERS ── */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.sec-title{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--dk);}
+.btn-primary{padding:9px 20px;background:linear-gradient(135deg,var(--or),#ff9100);color:#fff;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;cursor:pointer;transition:.2s;}
+.btn-primary:hover{transform:scale(1.04);}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 16px rgba(0,0,0,.06);text-align:center;}
+.stat-num{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--or);}
+.stat-lbl{font-size:.68rem;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.06);}
+table{width:100%;border-collapse:collapse;background:#fff;}
+thead{background:linear-gradient(135deg,var(--or),#ff9100);color:#fff;}
+th{padding:12px 14px;text-align:left;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+td{padding:11px 14px;border-bottom:1px solid #f5f5f5;font-size:.84rem;font-weight:700;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fff8f0;}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.7rem;font-weight:800;}
+.badge-pending{background:#fff3e0;color:#e65c00;}
+.badge-confirmed{background:#e0ffe8;color:var(--gr);}
+.badge-cancelled{background:#ffebee;color:#c00;}
+.badge-completed{background:#e3f2fd;color:var(--bl);}
+
+/* ── ACTION BUTTONS ── */
+.action-btn{padding:4px 10px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.7rem;cursor:pointer;transition:.2s;margin:2px;}
+.btn-confirm{background:#e0ffe8;color:var(--gr);}
+.btn-cancel{background:#ffebee;color:#c00;}
+.btn-edit{background:#e3f2fd;color:var(--bl);}
+.btn-delete{background:#ffebee;color:#c00;}
+.btn-complete{background:#ede7f6;color:#7b1fa2;}
+.btn-wa{background:#e0ffe8;color:#075e54;}
+
+/* ── FILTERS ── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.f-chip{padding:6px 14px;border:2px solid #eee;border-radius:50px;font-size:.75rem;font-weight:800;color:#888;cursor:pointer;background:#fff;transition:.2s;}
+.f-chip.active,.f-chip:hover{background:var(--or);border-color:var(--or);color:#fff;}
+
+/* ── SEARCH ── */
+.search-bar{padding:9px 14px;border:2px solid #eee;border-radius:50px;font-family:'Nunito',sans-serif;font-size:.84rem;font-weight:700;transition:.2s;outline:none;}
+.search-bar:focus{border-color:var(--or);}
+
+/* ── PRODUCT GRID ── */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+.prod-card{position:relative;background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.07);transition:.2s;overflow:hidden;}
+.prod-card::before{content:'';position:absolute;inset:0;background-image:var(--card-img);background-size:cover;background-position:center;opacity:.13;border-radius:16px;z-index:0;transition:.2s;}
+.prod-card:hover::before{opacity:.22;}
+.prod-card>*{position:relative;z-index:1;}
+.prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(255,107,0,.1);}
+.prod-card.inactive{opacity:.5;}
+.prod-name{font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--dk);margin-bottom:4px;}
+.prod-cat{font-size:.7rem;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.prod-price{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--or);margin-bottom:12px;}
+.prod-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ── CALENDAR ── */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cal-nav h3{font-family:'Fredoka One',cursive;font-size:1.2rem;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dn{font-size:.68rem;font-weight:800;text-transform:uppercase;color:#aaa;text-align:center;padding:.3rem 0;}
+.cal-day{min-height:60px;background:#fff;border:1.5px solid #f0f0f0;border-radius:10px;padding:6px;cursor:pointer;transition:.2s;}
+.cal-day:hover{border-color:var(--or);}
+.cal-day.other{opacity:.3;pointer-events:none;}
+.cal-day.today{border-color:var(--bl);background:#f0f8ff;}
+.cal-day.blk{background:#fff0f0;border-color:#ffaaaa;}
+.cal-day.has-res{background:#f0fff4;border-color:#aaddbb;}
+.cal-num{font-size:.78rem;font-weight:900;}
+.cal-tag{font-size:.58rem;font-weight:800;padding:1px 5px;border-radius:4px;margin-top:2px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cal-tag.blk{background:#fee2e2;color:#dc2626;}
+.cal-tag.res{background:#dcfce7;color:#16a34a;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:20px;padding:28px 24px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--dk);margin-bottom:20px;}
+.mfield{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.mfield label{font-size:.72rem;font-weight:800;color:var(--or);text-transform:uppercase;letter-spacing:1px;}
+.mfield input,.mfield select,.mfield textarea{padding:10px 13px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;transition:.2s;outline:none;}
+.mfield input:focus,.mfield select:focus,.mfield textarea:focus{border-color:var(--or);}
+.mfield textarea{resize:vertical;min-height:80px;}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap;}
+.btn-secondary{padding:9px 20px;background:#f0f0f0;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;}
+
+/* ── DETAIL ROWS ── */
+.detail-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.detail-item label{font-size:.7rem;font-weight:800;color:var(--or);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:3px;}
+.detail-item p{font-size:.88rem;font-weight:700;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;right:20px;background:#1a1c2e;color:#fff;border-radius:12px;padding:12px 18px;font-size:.83rem;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.3);transform:translateY(16px);opacity:0;transition:.25s;z-index:9999;max-width:280px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-left:4px solid var(--gr);}
+.toast.err{border-left:4px solid #ef4444;}
+
+/* ── OVERLAY sidebar mobile ── */
+#sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;}
+#sb-overlay.show{display:block;}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .hamburger{display:block!important;}
+  .tab-btn{padding:10px 12px;font-size:.78rem;}
+  .detail-row{grid-template-columns:1fr;}
+}
+
+/* ── DRAG & DROP ── */
+.prod-card{cursor:grab;}
+.prod-card.dragging{opacity:.4;transform:scale(.97);cursor:grabbing;}
+.prod-card.drag-over{border:2.5px dashed var(--or);background:#fff8f0;}
+.drag-handle{font-size:1.2rem;cursor:grab;margin-right:6px;color:#ccc;}
+
+.empty{text-align:center;padding:40px;color:#aaa;font-size:.9rem;font-weight:700;}
+.loading{text-align:center;padding:40px;color:#aaa;font-weight:700;}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:2.5rem;margin-bottom:8px">🪂</div>
+    <h1>Matias <span style="color:var(--or)">Jump Jumping</span></h1>
+    <p>Admin Panel</p>
+    <div class="lfield"><label>Username</label><input type="text" id="loginUser" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="lfield"><label>Password</label><input type="password" id="loginPass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn-login" onclick="doLogin()">Enter</button>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="sb-overlay" onclick="closeSidebar()"></div>
+<div class="drop-menu" id="drop-menu">
+  <div class="drop-item active" onclick="showTab('dashboard');closeSidebar()">📊 Panel de control</div>
+  <div class="drop-item" onclick="showTab('bookings');closeSidebar()">📋 Reservas</div>
+  <div class="drop-item" onclick="showTab('calendar');closeSidebar()">📅 Calendario</div>
+  <div class="drop-item" onclick="showTab('products');closeSidebar()">🛝 Productos</div>
+</div>
+<div id="adminApp">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="top-bar-logo">🪂 Matias <span>Jump Jumping</span></div>
+    </div>
+    <div class="top-bar-right">
+      <span id="topbar-subtitle" style="font-size:.78rem;color:#aaa;font-weight:700">Panel de control</span>
+      <button class="btn-logout" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar" id="tabs-bar">
+    <button class="tab-btn active" onclick="showTab('dashboard')">📊 Panel de control</button>
+    <button class="tab-btn" onclick="showTab('bookings')">📋 Reservas</button>
+    <button class="tab-btn" onclick="showTab('calendar')">📅 Calendario</button>
+    <button class="tab-btn" onclick="showTab('products')">🛝 Productos</button>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="tab-content active" id="tab-dashboard">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stTotal">—</div><div class="stat-lbl">Total</div></div>
+      <div class="stat-card"><div class="stat-num" id="stPending" style="color:#e65c00">—</div><div class="stat-lbl">Pendientes</div></div>
+      <div class="stat-card"><div class="stat-num" id="stConfirmed" style="color:var(--gr)">—</div><div class="stat-lbl">Confirmados</div></div>
+      <div class="stat-card"><div class="stat-num" id="stProducts" style="color:var(--bl)">—</div><div class="stat-lbl">Productos</div></div>
+    </div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">      <div>
+        <div class="sec-title" style="margin-bottom:12px">📅 Próximos 7 días</div>
+        <div id="upcomingList" class="loading">Cargando choquito…</div>
+      </div>
+      <div>
+        <div class="sec-title" style="margin-bottom:12px">⏳ Pendiente de aprobación</div>
+        <div id="pendingList" class="loading">Espera un ratito…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BOOKINGS ── -->
+  <div class="tab-content" id="tab-bookings">
+    <div class="sec-header">
+      <div class="sec-title">Todas las reservas</div>
+      <input class="search-bar" type="text" placeholder="🔍 Buscar…" oninput="searchBookings(this.value)" style="width:200px">
+    </div>
+    <div class="filter-row" id="bk-filters">
+      <div class="f-chip active" onclick="filterBk(this,'')">Todo</div>
+      <div class="f-chip" onclick="filterBk(this,'pending')">⏳ Pendiente</div>
+      <div class="f-chip" onclick="filterBk(this,'confirmed')">✅ Confirmado</div>
+      <div class="f-chip" onclick="filterBk(this,'cancelled')">❌ Cancelado</div>
+      <div class="f-chip" onclick="filterBk(this,'completed')">🎉 Completado</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Ref</th><th>Cliente</th><th>Ítem</th><th>Fecha</th><th>Hora</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="bookingsTbody"><tr><td colspan="7" class="loading">Carga y carga…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── CALENDAR ── -->
+  <div class="tab-content" id="tab-calendar">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div>
+        <div class="cal-nav">
+          <button class="action-btn btn-edit" onclick="calMonth(-1)">Anterior</button>
+          <h3 id="cal-label">—</h3>
+          <button class="action-btn btn-edit" onclick="calMonth(1)">Siguiente</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+      <div>
+        <div style="background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:14px">
+          <div style="font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:12px">🚫 Bloquear una fecha</div>
+          <div class="mfield"><label>Fecha</label><input type="date" id="blk-date"></div>
+          <div class="mfield"><label>Motivo</label><input type="text" id="blk-reason" placeholder="Vacaciones…"></div>
+          <button class="btn-primary" style="width:100%;background:linear-gradient(135deg,#ef4444,#dc2626)" onclick="doBlockDate()">Bloquear fecha</button>
+        </div>
+        <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 4px 16px rgba(0,0,0,.07);font-size:.8rem">
+          <div style="font-family:'Fredoka One',cursive;margin-bottom:10px">Leyenda</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#f0fff4;border:1.5px solid #aaddbb"></div>Tiene reservas</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:14px;height:14px;border-radius:3px;background:#fff0f0;border:1.5px solid #ffaaaa"></div>Bloqueado</div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:14px;height:14px;border-radius:3px;background:#f0f8ff;border:1.5px solid var(--bl)"></div>Hoy</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRODUCTS ── -->
+  <div class="tab-content" id="tab-products">
+    <div class="sec-header">
+      <div class="sec-title">Producto Catálogo</div>
+      <button class="btn-primary" onclick="openProductModal()">Añadir Producto</button>
+    </div>
+    <div class="filter-row" id="pr-filters">
+      <div class="f-chip active" onclick="filterPr(this,'')">Todo</div>
+      <div class="f-chip" onclick="filterPr(this,'combo')">🎪 Combo</div>
+      <div class="f-chip" onclick="filterPr(this,'castle')">🏰 Castillo</div>
+      <div class="f-chip" onclick="filterPr(this,'mini')">⚡ Mini</div>
+      <div class="f-chip" onclick="filterPr(this,'water')">💦 Agua</div>
+      <div class="f-chip" onclick="filterPr(this,'dry')">🌬️ Seco</div>
+      <div class="f-chip" onclick="filterPr(this,'chairs')">🪑 Sillas</div>
+      <div class="f-chip" onclick="filterPr(this,'extras')">➕ Extras</div>
+    </div>
+    <div class="prod-grid" id="prodGrid"><div class="loading">Cargando pues…</div></div>
+  </div>
+
+</div>
+
+<!-- ══ Modal: Booking Detail ══ -->
+<div class="modal-overlay" id="modalBooking" onclick="if(event.target===this)closeModal('modalBooking')">
+  <div class="modal">
+    <h3 id="mbkTitle">Detalle de reserva</h3>
+    <div id="mbkBody"></div>
+    <div class="modal-btns" id="mbkBtns"></div>
+  </div>
+</div>
+
+<!-- ══ Modal: Product ══ -->
+<div class="modal-overlay" id="modalProduct" onclick="if(event.target===this)closeModal('modalProduct')">
+  <div class="modal">
+    <h3 id="mprTitle">Producto</h3>
+    <input type="hidden" id="prId">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="mfield"><label>Nombre *</label><input type="text" id="prName" placeholder="Big Combo Blue"></div>
+      <div class="mfield"><label>Categoría *</label>
+        <select id="prCat">
+          <option value="combo">🎪 Combo</option>
+          <option value="castle">🏰 Castillo</option>
+          <option value="mini">⚡ Mini</option>
+          <option value="water">💦 Agua</option>
+          <option value="dry">🌬️ Seco</option> 
+          <option value="chairs">🪑 Sillas / Mesas</option>
+          <option value="extras">➕ Extras</option>
+        </select>
+      </div>
+      <div class="mfield"><label>Precio ($) *</label><input type="number" id="prPrice" min="0" step="0.01"></div>
+      <div class="mfield"><label>Estado</label>
+        <select id="prActive">
+          <option value="1">✅ Activo</option>
+          <option value="0">🙈 Oculto</option>
+        </select>
+      </div>
+    </div>
+    <div class="mfield"><label>Descripción</label><textarea id="prDesc" placeholder="Breve descripción…"></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="mfield"><label>Texto insignia</label><input type="text" id="prBadge" placeholder="🏰 Castillo"></div>
+      <div class="mfield"><label>Color insignia</label><input type="color" id="prBadgeColor" value="#FF6B00" style="height:42px;padding:4px"></div>
+    </div>
+    <div class="mfield"><label>Etiquetas (separadas por coma)</label><input type="text" id="prTags" placeholder="👦 Kids, 📏 15×15"></div>
+<div class="mfield">
+  <label>Imagen del producto</label>
+  <input type="file" id="prImgFile" accept="image/jpeg,image/jpg,image/png" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <button type="button" onclick="document.getElementById('prImgFile').click()"
+      style="padding:9px 18px;background:linear-gradient(135deg,var(--bl),#0077cc);color:#fff;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;cursor:pointer;white-space:nowrap">
+      📷 Subir imagen
+    </button>
+    <span id="prImgStatus" style="font-size:.78rem;font-weight:700;color:#aaa"></span>
+  </div>
+  <div id="prImgPreviewWrap" style="margin-top:10px;display:none">
+    <img id="prImgPreview" style="max-width:100%;max-height:160px;border-radius:10px;object-fit:cover;border:2px solid #eee">
+    <button type="button" onclick="clearImage()"
+      style="display:block;margin-top:6px;padding:4px 12px;background:#ffebee;color:#c00;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.72rem;cursor:pointer">
+      🗑 Quitar imagen
+    </button>
+  </div>
+  <input type="hidden" id="prImg">
+</div>
+<div class="mfield"><label>Stock (máx. por día)</label><input type="number" id="prStock" min="1" value="1"></div>
+      <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeModal('modalProduct')">Cancelar</button>
+      <button class="action-btn btn-delete" id="prDelBtn" onclick="deleteProduct()" style="display:none">🗑 Eliminar</button>
+      <button class="btn-primary" onclick="saveProduct()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Modal: Calendar Day ══ -->
+<div class="modal-overlay" id="modalDay" onclick="if(event.target===this)closeModal('modalDay')">
+  <div class="modal" style="max-width:420px">
+    <h3 id="mdayTitle">—</h3>
+    <div id="mdayBody"></div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeModal('modalDay')">Cerrar</button>
+      <button class="action-btn btn-delete" id="mdayBlkBtn" onclick="blockFromModal()">🚫 Bloquear</button>
+      <button class="action-btn btn-confirm" id="mdayUnblkBtn" style="display:none" onclick="unblockFromModal()">✅ Desbloquear</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/admin';
+let token = localStorage.getItem('mj_token') || '';
+let bookings = [], products = [], blockedDates = [], bookedMap = {};
+let currentBkId = null, currentDay = null;
+let calY = new Date().getFullYear(), calM = new Date().getMonth();
+let bkFilter = '', prFilter = '';
+
+// ── Boot ──────────────────────────────────────────────────────
+(async () => {
+  if (!token) return;
+  const r = await apiFetch('GET', '/me').catch(() => null);
+  if (r?.ok) showApp();
+  else { token = ''; localStorage.removeItem('mj_token'); }
+})();
+
+// ── Auth ──────────────────────────────────────────────────────
+async function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const err  = document.getElementById('loginErr');
+  err.classList.remove('show');
+  try {
+    const r = await fetch(`${API}/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username:user, password:pass})
+    });
+    const d = await r.json();
+    if (!d.ok) { err.textContent = d.error || 'Credenciales incorrectas'; err.classList.add('show'); return; }
+    token = d.token; localStorage.setItem('mj_token', token);
+    showApp();
+  } catch { err.textContent = 'Error de conexión.'; err.classList.add('show'); }
+}
+
+function doLogout() {
+  token = ''; localStorage.removeItem('mj_token');
+  document.getElementById('adminApp').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  window.location.href = '/';
+}
+
+function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  loadAll();
+}
+
+// ── Tabs ──────────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.drop-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(name.slice(0,4))) b.classList.add('active');
+  });
+  document.querySelectorAll('.drop-item').forEach(b => {
+    if (b.textContent.toLowerCase().includes(name.slice(0,4))) b.classList.add('active');
+  });
+  const tabNames = {dashboard:'Panel de control', bookings:'Reservas', calendar:'Calendario', products:'Productos'};
+  document.getElementById('topbar-subtitle').textContent = tabNames[name] || name;
+  if (name === 'calendar') renderCalendar();
+  closeSidebar();
+}
+
+// ── Sidebar mobile ────────────────────────────────────────────
+function toggleSidebar() {
+  const menu = document.getElementById('drop-menu');
+  const overlay = document.getElementById('sb-overlay');
+  menu.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('drop-menu').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('show');
+}
+
+// ── Load all ──────────────────────────────────────────────────
+async function loadAll() {
+  await Promise.allSettled([loadStats(), loadBookings(), loadProducts(), loadCalendarData()]);
+}
+
+// ── Stats ─────────────────────────────────────────────────────
+async function loadStats() {
+  const d = await apiFetch('GET', '/stats').catch(() => null);
+  if (!d?.ok) return;
+  const s = d.stats;
+  document.getElementById('stTotal').textContent     = s.total_bookings;
+  document.getElementById('stPending').textContent   = s.pending_bookings;
+  document.getElementById('stConfirmed').textContent = s.confirmed_bookings;
+  document.getElementById('stProducts').textContent  = s.active_products;
+
+  // Upcoming
+  const ul = document.getElementById('upcomingList');
+  if (!s.upcoming?.length) { ul.innerHTML = '<div class="empty">No hay eventos próximos</div>'; }
+  else ul.innerHTML = s.upcoming.map(b => {
+    const dt = new Date(b.event_date + 'T12:00:00');
+    return `<div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;align-items:center;gap:10px">
+      <div style="background:var(--or);color:#fff;border-radius:8px;padding:4px 8px;text-align:center;min-width:40px;flex-shrink:0">
+        <div style="font-family:'Fredoka One',cursive;font-size:.95rem;line-height:1">${dt.getDate()}</div>
+        <div style="font-size:.55rem;font-weight:800;text-transform:uppercase">${dt.toLocaleString('es',{month:'short'})}</div>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.customer_name)}</div>
+        <div style="font-size:.72rem;color:#aaa">🎪 ${esc(b.item_name)} · ⏰ ${esc(b.event_time)}</div>
+      </div>
+      <span class="badge badge-${b.status}">${{pending:'⏳ Pendiente',confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado'}[b.status]||b.status}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── Bookings ──────────────────────────────────────────────────
+async function loadBookings() {
+  const d = await apiFetch('GET', '/bookings').catch(() => null);
+  if (!d?.ok) return;
+  bookings = d.bookings;
+  bookedMap = {};
+  bookings.forEach(b => {
+    if (['pending','confirmed'].includes(b.status))
+      bookedMap[b.event_date] = (bookedMap[b.event_date] || 0) + 1;
+  });
+  renderBookings();
+  // Pending list on dashboard
+  const pl = document.getElementById('pendingList');
+  const pending = bookings.filter(b => b.status === 'pending').slice(0,5);
+  pl.innerHTML = !pending.length ? '<div class="empty">Ningún pendiente 🎉</div>' :
+    pending.map(b => `<div style="background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div>
+        <div style="font-weight:800;font-size:.85rem">${esc(b.booking_ref)}</div>
+        <div style="font-size:.72rem;color:#aaa">${esc(b.customer_name)} · ${b.event_date}</div>
+      </div>
+      <button class="action-btn btn-edit" onclick="openBooking(${b.id})">Ver</button>
+    </div>`).join('');
+}
+
+function renderBookings(list) {
+  let rows = list || bookings;
+  if (bkFilter) rows = rows.filter(b => b.status === bkFilter);
+  const tbody = document.getElementById('bookingsTbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">No hay reservas</td></tr>'; return; }
+
+  // Group rows by same customer + event_date + event_time + delivery_address + status
+  const groups = [];
+  const seen = {};
+  rows.forEach(b => {
+    const key = `${b.customer_email}|${b.event_date}|${b.event_time}|${b.delivery_address}|${b.status}`;
+    if (seen[key] !== undefined) {
+      groups[seen[key]].items.push(b);
+    } else {
+      seen[key] = groups.length;
+      groups.push({ key, main: b, items: [b] });
+    }
+  });
+
+  tbody.innerHTML = groups.map(g => {
+    const b = g.main;
+    const itemNames = g.items.map(x => esc(x.item_name)).join('<br>');
+    const refs = g.items.map(x => `<strong>${esc(x.booking_ref)}</strong>`).join('<br>');
+    const statusMap = {pending:'⏳ Pendiente',confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado'};
+    return `<tr>
+      <td>${refs}</td>
+      <td><div style="font-weight:800">${esc(b.customer_name)}</div><div style="font-size:.72rem;color:#aaa">${esc(b.customer_email)}</div></td>
+      <td style="font-size:.8rem">${itemNames}</td>
+      <td><strong>${b.event_date}</strong></td>
+      <td>${esc(b.event_time)}</td>
+      <td><span class="badge badge-${b.status}">${statusMap[b.status]||b.status}</span></td>
+      <td>${g.items.map(x => `<button class="action-btn btn-edit" onclick="openBooking(${x.id})">${esc(x.booking_ref)}</button>`).join('')}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterBk(el, status) {
+  document.querySelectorAll('#bk-filters .f-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active'); bkFilter = status; renderBookings();
+}
+
+function searchBookings(q) {
+  if (!q) { renderBookings(); return; }
+  renderBookings(bookings.filter(b =>
+    b.customer_name?.toLowerCase().includes(q.toLowerCase()) ||
+    b.customer_email?.toLowerCase().includes(q.toLowerCase()) ||
+    b.booking_ref?.toLowerCase().includes(q.toLowerCase()) ||
+    b.item_name?.toLowerCase().includes(q.toLowerCase())
+  ));
+}
+
+async function openBooking(id) {
+  currentBkId = id;
+  const b = bookings.find(x => x.id == id);
+  if (!b) return;
+  document.getElementById('mbkTitle').textContent = `${b.booking_ref} — ${b.customer_name}`;
+  document.getElementById('mbkBody').innerHTML = `
+    <div class="detail-row">
+      <div class="detail-item"><label>Cliente</label><p>${esc(b.customer_name)}</p></div>
+      <div class="detail-item"><label>Email</label><p>${esc(b.customer_email)}</p></div>
+      <div class="detail-item"><label>Teléfono</label><p>${esc(b.customer_phone||'—')}</p></div>
+      <div class="detail-item"><label>Estado</label><p><span class="badge badge-${b.status}">${{pending:'⏳ Pendiente',confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado'}[b.status]||b.status}</span></p></div>
+      <div class="detail-item"><label>Fecha del evento</label><p><strong>${b.event_date}</strong></p></div>
+      <div class="detail-item"><label>Hora</label><p>${esc(b.event_time)}</p></div>
+    </div>
+    <div class="mfield"><label>Dirección</label><p style="font-size:.88rem;font-weight:700;padding:4px 0">${esc(b.delivery_address)}</p></div>
+    <div style="background:#fff8f0;border-radius:10px;padding:12px;margin:10px 0"><strong style="font-family:'Fredoka One',cursive">🎪 ${esc(b.item_name)}</strong></div>
+    ${b.notes ? `<div class="mfield"><label>Notas del cliente</label><p style="font-size:.85rem;color:#888;padding:4px 0">${esc(b.notes)}</p></div>` : ''}
+    <div class="mfield"><label>Notas internas</label>
+      <textarea id="bkNotes" style="width:100%;padding:10px;border:2px solid #eee;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;outline:none;min-height:70px" placeholder="Solo tú ves esto…">${esc(b.internal_notes||'')}</textarea>
+      <button class="action-btn btn-edit" style="margin-top:4px" onclick="saveNotes()">Guardar notas</button>
+    </div>
+    <div style="margin-top:10px">
+      <a href="https://wa.me/15718398914?text=${encodeURIComponent('Hola '+b.customer_name+'! Tu reserva '+b.booking_ref+' para el '+b.event_date+' está confirmado ✅')}" target="_blank" class="action-btn btn-wa"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp del cliente</a>
+    </div>`;
+  document.getElementById('mbkBtns').innerHTML = `
+    <button class="btn-secondary" onclick="closeModal('modalBooking')">Cerrar</button>
+    ${b.status==='pending'?`<button class="action-btn btn-confirm" onclick="changeStatus('confirmed')">✅ Confirmado</button>`:''}
+    ${['pending','confirmed'].includes(b.status)?`<button class="action-btn btn-cancel" onclick="changeStatus('cancelled')">❌ Cancelado</button>`:''}
+    ${b.status==='confirmed'?`<button class="action-btn btn-complete" onclick="changeStatus('completed')">🎉 Completado</button>`:''}
+    <button class="action-btn btn-delete" onclick="deleteBk()">🗑</button>`;
+  openModal('modalBooking');
+}
+
+async function changeStatus(status) {
+  await apiFetch('POST', `/bookings/${currentBkId}`, {status});
+  const b = bookings.find(x => x.id == currentBkId);
+  if (b) b.status = status;
+  renderBookings(); closeModal('modalBooking'); loadStats();
+  const statusMsg = {confirmed:'✅ Confirmado',cancelled:'❌ Cancelado',completed:'🎉 Completado',pending:'⏳ Pendiente'};
+  toast('Estado: ' + (statusMsg[status]||status), 'ok');
+}
+
+async function saveNotes() {
+  const notes = document.getElementById('bkNotes').value;
+  await apiFetch('POST', `/bookings/${currentBkId}`, {internal_notes: notes});
+  const b = bookings.find(x => x.id == currentBkId);
+  if (b) b.internal_notes = notes;
+  toast('Notas guardadas ✓', 'ok');
+}
+
+async function deleteBk() {
+  if (!confirm('¿Eliminar esta reserva?')) return;
+  await apiFetch('DELETE', `/bookings/${currentBkId}`);
+  bookings = bookings.filter(x => x.id != currentBkId);
+  renderBookings(); closeModal('modalBooking'); loadStats();
+  toast('Eliminado', 'ok');
+}
+
+// ── Products ──────────────────────────────────────────────────
+async function loadProducts() {
+  const d = await apiFetch('GET', '/products').catch(() => null);
+  if (!d?.ok) return;
+  products = d.products;
+  renderProducts();
+  document.getElementById('stProducts').textContent = products.filter(p => p.active).length;
+}
+
+function renderProducts() {
+  const grid = document.getElementById('prodGrid');
+  let list = prFilter ? products.filter(p => p.category === prFilter) : products;
+  if (!list.length) { grid.innerHTML = '<div class="empty">No hay productos</div>'; return; }
+  const icons = {combo:'🎪',castle:'🏰',mini:'⚡',water:'💦',dry:'🌬️',chairs:'🪑',extras:'➕'};
+  grid.innerHTML = list.map(p => `
+<div class="prod-card ${p.active?'':'inactive'}" draggable="true" data-id="${p.id}" ${p.image_url?`style="--card-img:url('${p.image_url}?v=${Date.now()}')"`:' style="--card-img:none"'}>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:1.1rem;cursor:grab;color:#ccc" title="Arrastra para reordenar">⠿</span>
+        <span style="font-size:1.4rem">${icons[p.category]||'📦'}</span>
+        <span style="font-size:.7rem;font-weight:800;color:${p.active?'var(--gr)':'#aaa'}">${p.active?'ACTIVO':'OCULTO'}</span>
+      </div>
+      <div class="prod-name">${esc(p.name)}</div>
+      <div class="prod-cat">${esc(p.category)}</div>
+      <div class="prod-price">$${parseFloat(p.price).toFixed(2)}</div>
+      ${p.description?`<div style="font-size:.78rem;color:#888;margin-bottom:10px;line-height:1.5">${esc(p.description)}</div>`:''}
+      <div class="prod-actions">
+        <span style="font-size:.7rem;font-weight:800;color:#888">📦 ${p.stock??1}/día</span>
+        <button class="action-btn btn-edit" onclick="openProductModal(${p.id})">✏️ Editar</button>
+        <button class="action-btn ${p.active?'btn-cancel':'btn-confirm'}" onclick="toggleActive(${p.id},${p.active?0:1})">${p.active?'🙈 Ocultar':'👁 Mostrar'}</button>
+      </div>
+    </div>`).join('');
+  initDrag();
+}
+
+function initDrag() {
+  const grid = document.getElementById('prodGrid');
+  let dragSrc = null;
+  grid.querySelectorAll('.prod-card[draggable]').forEach(card => {
+    card.addEventListener('dragstart', e => {
+      dragSrc = card;
+      setTimeout(() => card.classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      grid.querySelectorAll('.prod-card').forEach(c => c.classList.remove('drag-over'));
+    });
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (card !== dragSrc) card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+    card.addEventListener('drop', async e => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      if (!dragSrc || dragSrc === card) return;
+      const allCards = [...grid.querySelectorAll('.prod-card[draggable]')];
+      const fromIdx = allCards.indexOf(dragSrc);
+      const toIdx   = allCards.indexOf(card);
+      if (fromIdx < toIdx) card.after(dragSrc);
+      else card.before(dragSrc);
+      await saveOrder();
+    });
+  });
+}
+
+async function saveOrder() {
+  const cards = [...document.querySelectorAll('#prodGrid .prod-card[draggable]')];
+  const order = cards.map((c, i) => ({ id: parseInt(c.dataset.id), sort_order: i }));
+  const d = await apiFetch('POST', '/products/reorder', { order });
+  if (d?.ok) {
+    order.forEach(u => { const p = products.find(x => x.id === u.id); if (p) p.sort_order = u.sort_order; });
+    toast('Orden guardado ✓', 'ok');
+  }
+}
+
+function filterPr(el, cat) {
+  document.querySelectorAll('#pr-filters .f-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active'); prFilter = cat; renderProducts();
+}
+
+function openProductModal(id) {
+  const p = id ? products.find(x => x.id == id) : null;
+  document.getElementById('mprTitle').textContent = p ? 'Editar producto' : 'Nuevo producto';
+  document.getElementById('prId').value          = p?.id || '';
+  document.getElementById('prName').value        = p?.name || '';
+  document.getElementById('prCat').value         = p?.category || 'combo';
+  document.getElementById('prPrice').value       = p?.price || '';
+  document.getElementById('prActive').value      = p !== null ? (p?.active ?? 1) : 1;
+  document.getElementById('prDesc').value        = p?.description || '';
+  document.getElementById('prBadge').value       = p?.badge_text || '';
+  document.getElementById('prBadgeColor').value  = p?.badge_color || '#FF6B00';
+  document.getElementById('prTags').value        = parseTags(p?.tags).join(', ');
+document.getElementById('prImg').value   = p?.image_url || '';
+document.getElementById('prStock').value = p?.stock ?? 1;
+document.getElementById('prDelBtn').style.display = p ? '' : 'none';
+// Preview imagen existente
+const wrap = document.getElementById('prImgPreviewWrap');
+const prev = document.getElementById('prImgPreview');
+const stat = document.getElementById('prImgStatus');
+document.getElementById('prImgFile').value = '';
+if (p?.image_url) {
+  prev.src = p.image_url;
+  wrap.style.display = 'block';
+  stat.textContent = '✅ Imagen cargada';
+} else {
+  wrap.style.display = 'none';
+  stat.textContent = '';
+}
+  openModal('modalProduct');
+}
+
+async function saveProduct() {
+  const id    = document.getElementById('prId').value;
+  const name  = document.getElementById('prName').value.trim();
+  const price = document.getElementById('prPrice').value;
+  if (!name || price === '') { toast('Nombre y precio requerido', 'err'); return; }
+  const tagsRaw = document.getElementById('prTags').value;
+  const tags    = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
+  const body = {
+    name, category: document.getElementById('prCat').value,
+    price: parseFloat(price), active: parseInt(document.getElementById('prActive').value),
+    description: document.getElementById('prDesc').value,
+    badge_text: document.getElementById('prBadge').value,
+    badge_color: document.getElementById('prBadgeColor').value,
+tags, image_url: document.getElementById('prImg').value,
+    stock: parseInt(document.getElementById('prStock').value) || 1,
+  };
+  const d = id ? await apiFetch('PUT',`/products/${id}`,body) : await apiFetch('POST','/products',body);
+  if (!d?.ok) { toast(d?.error||'Error', 'err'); return; }
+  toast(id?'Actualizado ✓':'Creado ✓', 'ok');
+  closeModal('modalProduct'); loadProducts();
+}
+
+async function deleteProduct() {
+  const id = document.getElementById('prId').value;
+  if (!id || !confirm('¿Eliminar este producto?')) return;
+  await apiFetch('DELETE', `/products/${id}`);
+  toast('Eliminado', 'ok'); closeModal('modalProduct'); loadProducts();
+}
+
+async function toggleActive(id, active) {
+  const p = products.find(x => x.id == id);
+  if (!p) return;
+  await apiFetch('PUT', `/products/${id}`, {...p, active, tags: parseTags(p.tags)});
+  toast(active?'Ahora visible ✓':'Oculto ✓', 'ok'); loadProducts();
+}
+
+// ── Calendar ──────────────────────────────────────────────────
+async function loadCalendarData() {
+  const d = await apiFetch('GET', '/blocked-dates').catch(() => null);
+  if (!d?.ok) return;
+  blockedDates = d.dates.map(x => x.date);
+  renderCalendar();
+}
+
+function calMonth(delta) {
+  calM += delta;
+  if (calM > 11) { calM = 0; calY++; }
+  if (calM < 0)  { calM = 11; calY--; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const label = new Date(calY, calM, 1).toLocaleString('es',{month:'long',year:'numeric'});
+  document.getElementById('cal-label').textContent = label;
+  const today  = new Date().toISOString().split('T')[0];
+  const first  = new Date(calY, calM, 1).getDay();
+  const daysM  = new Date(calY, calM+1, 0).getDate();
+  const prevD  = new Date(calY, calM, 0).getDate();
+  const days   = ['Do','Lu','Ma','Mi','Ju','Vi','Sa'];
+  let html = days.map(d=>`<div class="cal-dn">${d}</div>`).join('');
+  for (let i=first-1;i>=0;i--) html+=`<div class="cal-day other"><div class="cal-num">${prevD-i}</div></div>`;
+  for (let d=1;d<=daysM;d++) {
+    const ds  = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const blk = blockedDates.includes(ds);
+    const cnt = bookedMap[ds]||0;
+    let cls = 'cal-day';
+    if (ds===today) cls+=' today';
+    if (blk) cls+=' blk';
+    if (cnt) cls+=' has-res';
+    html+=`<div class="${cls}" onclick="openDayModal('${ds}')"><div class="cal-num">${d}</div>
+      ${blk?`<span class="cal-tag blk">🚫 Bloqueado</span>`:''}
+      ${cnt?`<span class="cal-tag res">📋 ${cnt}</span>`:''}
+    </div>`;
+  }
+  const trail = (first+daysM)%7;
+  if (trail) for (let d=1;d<=7-trail;d++) html+=`<div class="cal-day other"><div class="cal-num">${d}</div></div>`;
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+function openDayModal(ds) {
+  currentDay = ds;
+  const dt   = new Date(ds+'T12:00:00');
+  const isBlk = blockedDates.includes(ds);
+  const dayBk = bookings.filter(b => b.event_date===ds && ['pending','confirmed'].includes(b.status));
+  document.getElementById('mdayTitle').textContent = dt.toLocaleDateString('es',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('mdayBlkBtn').style.display   = isBlk?'none':'';
+  document.getElementById('mdayUnblkBtn').style.display = isBlk?'':'none';
+  let body = isBlk?`<div style="background:#fff0f0;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:800;color:#c00;font-size:.85rem">🚫 Esta fecha está bloqueada</div>`:'';
+  body += !dayBk.length ? `<div class="empty" style="padding:16px">No hay reservas para esta fecha</div>` :
+    dayBk.map(b=>`<div style="background:#f7f8ff;border-radius:10px;padding:10px 14px;margin-bottom:8px">
+      <div style="font-weight:800">${esc(b.booking_ref)} — ${esc(b.customer_name)}</div>
+      <div style="font-size:.75rem;color:#aaa">🎪 ${esc(b.item_name)} · ⏰ ${esc(b.event_time)}</div>
+      <button class="action-btn btn-edit" style="margin-top:6px" onclick="closeModal('modalDay');openBooking(${b.id})">Ver</button>
+    </div>`).join('');
+  document.getElementById('mdayBody').innerHTML = body;
+  openModal('modalDay');
+}
+
+async function doBlockDate() {
+  const date   = document.getElementById('blk-date').value;
+  const reason = document.getElementById('blk-reason').value;
+  if (!date) { toast('Selecciona una fecha primero','err'); return; }
+  await apiFetch('POST','/blocked-dates',{date,reason});
+  if (!blockedDates.includes(date)) blockedDates.push(date);
+  bookedMap = {...bookedMap}; renderCalendar();
+  document.getElementById('blk-date').value='';
+  document.getElementById('blk-reason').value='';
+  toast('Fecha bloqueada','ok');
+}
+
+async function blockFromModal() {
+  if (!currentDay) return;
+  await apiFetch('POST','/blocked-dates',{date:currentDay,reason:''});
+  if (!blockedDates.includes(currentDay)) blockedDates.push(currentDay);
+  renderCalendar(); closeModal('modalDay'); toast('Fecha bloqueada','ok');
+}
+
+async function unblockFromModal() {
+  if (!currentDay) return;
+  await apiFetch('DELETE',`/blocked-dates/${currentDay}`);
+  blockedDates = blockedDates.filter(d=>d!==currentDay);
+  renderCalendar(); closeModal('modalDay'); toast('Fecha desbloqueada','ok');
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+async function apiFetch(method, path, body) {
+  const opts = {method, headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}};
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API+path, opts);
+  if (r.status===401) { doLogout(); return {ok:false}; }
+  return r.json();
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+
+function parseTags(tags) {
+  if (!tags) return [];
+  if (Array.isArray(tags)) return tags;
+  try { return JSON.parse(tags); } catch { return []; }
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+// ── Image Upload ──────────────────────────────────────────────
+document.getElementById('prImgFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const allowed = ['image/jpeg','image/jpg','image/png'];
+  if (!allowed.includes(file.type)) {
+    toast('Solo se permiten JPG, JPEG y PNG', 'err'); return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    toast('La imagen no puede superar 5MB', 'err'); return;
+  }
+
+  // Preview inmediato
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('prImgPreview').src = ev.target.result;
+    document.getElementById('prImgPreviewWrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+
+  const stat = document.getElementById('prImgStatus');
+  stat.textContent = '⏳ Subiendo…';
+  stat.style.color = '#e65c00';
+
+  try {
+    const fd = new FormData();
+    fd.append('image', file);
+    const res = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: fd
+    });
+    const data = await res.json();
+    if (data.url) {
+      document.getElementById('prImg').value = data.url;
+      stat.textContent = '✅ Lista para guardar';
+      stat.style.color = 'var(--gr)';
+    } else {
+      stat.textContent = '❌ ' + (data.error || 'Error al subir');
+      stat.style.color = '#ef4444';
+    }
+  } catch {
+    document.getElementById('prImgStatus').textContent = '❌ Error de conexión';
+    document.getElementById('prImgStatus').style.color = '#ef4444';
+  }
+});
+
+function clearImage() {
+  document.getElementById('prImg').value = '';
+  document.getElementById('prImgFile').value = '';
+  document.getElementById('prImgPreviewWrap').style.display = 'none';
+  document.getElementById('prImgStatus').textContent = '';
+}
+
+
+  const t = document.getElementById('toast');
+  t.textContent=msg; t.className=`toast ${type} show`;
+  clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
