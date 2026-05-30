@@ -7,6 +7,9 @@ binding     = "DB"              # env.DB en el código
 database_name = "matiasjump-db" # nombre que le ponés en el dashboard
 database_id   = "0ceb9ad1-9d99-463c-b32a-21bec7190f14"   # ← lo obtenés al crear la DB
 
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "matias-jump-images"
 # Variables de entorno (también se pueden poner en el dashboard)
 # ⚠️  NUNCA subas este archivo con valores reales a GitHub público
 # Ponelas en el dashboard: Settings → Environment Variables
